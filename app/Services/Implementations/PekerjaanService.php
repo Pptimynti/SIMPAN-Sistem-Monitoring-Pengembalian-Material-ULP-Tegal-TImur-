@@ -169,12 +169,12 @@ class PekerjaanService implements PekerjaanInterface
                     }
 
                     foreach ($material['gambar'] as $gambar) {
-                        $filepath = $gambar->store('images', 'public');
+                        $fileName = time() . '_' . $gambar->getClientOriginalName();
+                        $gambar->move(public_path('images'), $fileName);
                         GambarMaterial::create([
                             'material_dikembalikan_id' => $materialDikembalikan->id,
-                            'gambar' => $filepath
+                            'gambar' => 'images/' . $fileName
                         ]);
-                        Log::info('Gambar baru disimpan: ' . $filepath);
                     }
                 }
             }
