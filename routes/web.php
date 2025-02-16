@@ -40,3 +40,9 @@ Route::controller(PetugasController::class)->prefix('/petugas')->group(function 
     Route::get('/pengembalian-material/tambah', 'halamanTambahPengembalianMaterial')->name('petugas.halaman.tambah.pengembalian-material');
     Route::post('/pengembalian-material/tambah', 'tambahPengembalianMaterial')->name('petugas.tambah.pengembalian-material');
 });
+
+
+Route::get('/storage-link', function () {
+    Artisan::call('storage:link');
+    return 'Storage link berhasil dibuat!';
+});
