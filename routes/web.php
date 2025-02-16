@@ -43,6 +43,6 @@ Route::controller(PetugasController::class)->prefix('/petugas')->group(function 
 
 
 Route::get('/storage-link', function () {
-    Artisan::call('storage:link');
-    return 'Storage link berhasil dibuat!';
+    File::copyDirectory(storage_path('app/public'), public_path('storage'));
+    return 'Storage copied!';
 });
