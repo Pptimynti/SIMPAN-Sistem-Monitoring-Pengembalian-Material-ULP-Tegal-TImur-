@@ -127,7 +127,7 @@
       <div id="sidebar"
          class="fixed inset-y-0 w-72 bg-[#1e243a] p-4 -translate-x-72 transition-all duration-150 z-20">
          <div class="w-full flex gap-2">
-            <img src="{{ asset('storage/images/pln.png') }}" alt="" class="w-14 h-14">
+            <img src="{{ asset('images/pln.png') }}" alt="" class="w-14 h-14">
             <div>
                <h1 class="text-white font-bold leading-5">MONITORING MATERIAL SISTEM</h1>
                <p class="text-sm text-white font-light">ULP Tegal Timur</p>

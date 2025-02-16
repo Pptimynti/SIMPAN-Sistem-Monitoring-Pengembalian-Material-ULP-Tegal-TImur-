@@ -70,13 +70,12 @@ class PekerjaanService implements PekerjaanInterface
 
                 if (isset($material['gambar'])) {
                     foreach ($material['gambar'] as $gambar) {
-                        $file = $gambar->store('images', 'public');
-                        Log::info("Variabel gambar: " . json_encode($gambar));
-                        Log::info("Variabel file: " . $file);
+                        $fileName = time() . '_' . $gambar->getClientOriginalName();
+                        $gambar->move(public_path('images'), $fileName);
 
                         GambarMaterial::create([
                             'material_dikembalikan_id' => $materialDikembalikan->id,
-                            'gambar' => $file
+                            'gambar' => 'images/' . $fileName
                         ]);
                     }
                 }

@@ -40,9 +40,3 @@ Route::controller(PetugasController::class)->prefix('/petugas')->group(function 
     Route::get('/pengembalian-material/tambah', 'halamanTambahPengembalianMaterial')->name('petugas.halaman.tambah.pengembalian-material');
     Route::post('/pengembalian-material/tambah', 'tambahPengembalianMaterial')->name('petugas.tambah.pengembalian-material');
 });
-
-
-Route::get('/storage-link', function () {
-    File::copyDirectory(storage_path('app/public'), public_path('storage'));
-    return 'Storage copied!';
-});
