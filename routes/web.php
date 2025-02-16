@@ -29,6 +29,9 @@ Route::controller(AdminController::class)->prefix('/admin')->group(function () {
     Route::put('/pengembalian-material/{pekerjaanId}/update', 'updatePengembalianMaterial')->name('admin.update.pengembalian-material');
     Route::delete('/pengembalian-material/{pekerjaanId}/hapus', 'hapusPengembalianMaterial')->name('admin.hapus.pengembalian-material');
     Route::get('/rekap-data/pengembalian-material', 'rekapPengembalianMaterial')->name('admin.laporan.pengembalian-material');
+    Route::get('/rekap-data/pengembalian-material/{pekerjaanId}/detail', 'rekapDetailPengembalianMaterial')->name('admin.laporan.detail.pengembalian-material');
+    Route::get('/pengembalian-material/{pekerjaanId}/export', 'exportDetailPengembalianMaterial')->name('export.detail-pengembalian-material');
+    Route::get('/pengembalian-material/{pekerjaanId}/exportPdf', 'cetakPdfDetailPengembalianMaterial')->name('exportPdf.detail-pengembalian-material');
 });
 
 Route::controller(PetugasController::class)->prefix('/petugas')->group(function () {

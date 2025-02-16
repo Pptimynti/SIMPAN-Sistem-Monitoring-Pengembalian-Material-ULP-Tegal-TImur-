@@ -1,6 +1,6 @@
 <x-app-layout>
    <form method="POST" action="{{ route('admin.update.pengembalian-material', $pekerjaan->id) }}"
-      class="max-w-sm mx-auto p-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg shadow border border-gray-300 dark:border-gray-700"
+      class="wfull p-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg shadow border border-gray-300 dark:border-gray-700"
       enctype="multipart/form-data">
       @csrf
       @method('PUT')
@@ -32,30 +32,33 @@
 
       <div id="materialContainer">
          @foreach ($pekerjaan->materialDikembalikans as $index => $material)
-            @foreach ($material->gambarMaterials as $gambar)
-               <div class="w-full h-96 mb-2 mt-2">
-                  <img src="{{ asset('storage/' . $gambar->gambar) }}" alt=""
-                     class="w-full h-full bg-cover bg-center">
-               </div>
-            @endforeach
-            <div class="grid grid-cols-2 gap-3 material-item mb-3">
-               <input type="hidden" name="material_dikembalikan[{{ $index }}][id]" value="{{ $material->id }}">
-               <div class="col-span-1">
-                  <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Material</label>
-                  <input type="text" name="material_dikembalikan[{{ $index }}][nama]" required
-                     value="{{ $material->nama }}"
-                     class="shadow-xs bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500" />
-               </div>
-               <div class="col-span-1">
-                  <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Jumlah</label>
-                  <input type="number" name="material_dikembalikan[{{ $index }}][jumlah]" required
-                     min="1" value="{{ $material->jumlah }}"
-                     class="shadow-xs bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500" />
-               </div>
-               <div class="col-span-2">
-                  <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Gambar</label>
-                  <input type="file" name="material_dikembalikan[{{ $index }}][gambar][]" multiple
-                     class="block w-full text-sm text-gray-900 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 focus:ring-blue-500 focus:border-blue-500" />
+            <div class="md:w-full md:flex md:items-start md:gap-4">
+               @foreach ($material->gambarMaterials as $gambar)
+                  <div class="w-full h-96 mb-2 mt-2 md:mt-0 md:mb-6">
+                     <img src="{{ asset('storage/' . $gambar->gambar) }}" alt=""
+                        class="w-full h-full bg-cover bg-center">
+                  </div>
+               @endforeach
+               <div class="grid grid-cols-2 gap-3 material-item mb-3 md:w-full">
+                  <input type="hidden" name="material_dikembalikan[{{ $index }}][id]"
+                     value="{{ $material->id }}">
+                  <div class="col-span-1">
+                     <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Material</label>
+                     <input type="text" name="material_dikembalikan[{{ $index }}][nama]" required
+                        value="{{ $material->nama }}"
+                        class="shadow-xs bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500" />
+                  </div>
+                  <div class="col-span-1">
+                     <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Jumlah</label>
+                     <input type="number" name="material_dikembalikan[{{ $index }}][jumlah]" required
+                        min="1" value="{{ $material->jumlah }}"
+                        class="shadow-xs bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500" />
+                  </div>
+                  <div class="col-span-2">
+                     <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Gambar</label>
+                     <input type="file" name="material_dikembalikan[{{ $index }}][gambar][]" multiple
+                        class="block w-full text-sm text-gray-900 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 focus:ring-blue-500 focus:border-blue-500" />
+                  </div>
                </div>
             </div>
          @endforeach

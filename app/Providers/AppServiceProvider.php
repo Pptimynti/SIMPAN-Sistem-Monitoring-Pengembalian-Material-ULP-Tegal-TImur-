@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Services\Implementations\PekerjaanService;
 use App\Services\PekerjaanInterface;
+use Carbon\Carbon;
 use DB;
 use Illuminate\Support\ServiceProvider;
 use Log;
@@ -28,7 +29,7 @@ class AppServiceProvider extends ServiceProvider
             Log::debug('Query :' . $query->sql);
         });
 
-        if (env(key: 'APP_ENV') == 'local') {
+        if (env(key: 'APP_ENV') !== 'local') {
             URL::forceScheme(scheme: 'https');
         }
     }

@@ -1,6 +1,6 @@
 <x-app-layout>
    <form method="POST" action="{{ route('petugas.tambah.pengembalian-material') }}"
-      class="max-w-sm mx-auto p-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg shadow border border-gray-300 dark:border-gray-700"
+      class="max-w-sm mx-auto p-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg shadow border border-gray-300 dark:border-gray-700 md:max-w-lg"
       enctype="multipart/form-data">
       @csrf
       <h1 class="font-bold mb-4 text-lg max-w-60">Tambah Data Pengembalian Material</h1>

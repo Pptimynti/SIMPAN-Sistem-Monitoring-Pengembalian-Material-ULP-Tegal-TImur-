@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\DetailRekapPengembalianMaterial;
 use App\Models\Pekerjaan;
 use App\Services\PekerjaanInterface;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Log;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AdminController extends Controller
 {
@@ -49,4 +52,35 @@ class AdminController extends Controller
         $pekerjaans = Pekerjaan::with(['materialDikembalikans.gambarMaterials'])->get();
         return view('admin.rekap-pengembalian-material', compact('pekerjaans'));
     }
+
+    public function rekapDetailPengembalianMaterial($pekerjaanId)
+    {
+        $pekerjaan = Pekerjaan::with('materialDikembalikans.gambarMaterials')
+            ->findOrFail($pekerjaanId)
+            ->first();
+        if ($pekerjaan) {
+            return view('admin.detail-pengembalian-material', compact('pekerjaan'));
+        } else {
+            abort(404);
+        }
+    }
+
+    public function exportDetailPengembalianMaterial($pekerjaanId)
+    {
+        $no_agenda = Pekerjaan::findOrFail($pekerjaanId)->first()->no_agenda;
+        return Excel::download(new DetailRekapPengembalianMaterial($pekerjaanId), "detail-{$no_agenda}.xlsx");
+    }
+
+    public function cetakPdfDetailPengembalianMaterial($pekerjaanId)
+    {
+        $pekerjaan = Pekerjaan::with('materialDikembalikans.gambarMaterials')->findOrFail($pekerjaanId)->first();
+
+        $pdf = Pdf::loadView('detail_pengembalian_material', ['pekerjaan' => $pekerjaan])->setPaper('A4', 'landscape');
+
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf->stream();
+        }, 'detail-pengembalian-material.pdf');
+    }
+
+
 }
