@@ -34,7 +34,7 @@
 
       <!-- Heading -->
       <div
-         class="inset-x-0 top-0 fixed bg-[#136782] h-16 flex justify-between p-2 items-center dark:bg-gray-700 md:p-4">
+         class="inset-x-0 top-0 fixed bg-[#136782] h-16 flex justify-between p-2 items-center dark:bg-gray-700 md:p-4 md:h-20">
          <button id="toggleSB" type="button">
             <svg viewBox="0 0 24 24" width="24" height="24" stroke="white" stroke-width="2" fill="none"
                stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
@@ -173,7 +173,7 @@
       </div>
 
       <!-- Page Content -->
-      <main class="px-2 py-4 md:py-6 md:px-4 lg:ml-72">
+      <main class="px-2 py-4 mt-16 md:py-6 md:px-4 md:mt-20 lg:ml-72">
          {{ $slot }}
       </main>
    </div>
