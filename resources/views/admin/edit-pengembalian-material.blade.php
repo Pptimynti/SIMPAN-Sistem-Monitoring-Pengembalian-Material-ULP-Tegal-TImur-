@@ -35,7 +35,8 @@
             <div class="md:w-full md:flex md:items-start md:gap-4">
                @foreach ($material->gambarMaterials as $gambar)
                   <div class="w-full h-96 mb-2 mt-2 md:mt-0 md:mb-6">
-                     <img src="{{ asset($gambar->gambar) }}" alt="" class="w-full h-full bg-cover bg-center">
+                     <img src="{{ asset('storage/images/' . $gambar->gambar) }}" alt=""
+                        class="w-full h-full bg-cover bg-center">
                   </div>
                @endforeach
                <div class="grid grid-cols-2 gap-3 material-item mb-3 md:w-full">
