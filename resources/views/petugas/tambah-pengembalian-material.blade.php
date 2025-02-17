@@ -97,20 +97,4 @@
          });
       });
    </script>
-   <script>
-      @if (session('success'))
-         Swal.fire({
-            title: "Drag me!",
-            icon: "success",
-            draggable: true
-         });
-      @else
-         Swal.fire({
-            title: "Gagal!",
-            icon: "warning",
-            draggable: true
-         });
-      @endif
-   </script>
-
 </x-script>

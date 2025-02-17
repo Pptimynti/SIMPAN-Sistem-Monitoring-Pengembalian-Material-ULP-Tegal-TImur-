@@ -93,4 +93,21 @@
          window.location.href = this.dataset.url;
       })
    </script>
+   <script>
+      document.addEventListener("DOMContentLoaded", function() {
+         @if (session('success'))
+            Swal.fire({
+               title: "Drag me!",
+               icon: "{{ session('success') }}",
+               draggable: true
+            });
+         @elseif (session('error'))
+            Swal.fire({
+               title: "{{ session('error') }}",
+               icon: "warning",
+               draggable: true
+            });
+         @endif
+      });
+   </script>
 </x-script>
