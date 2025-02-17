@@ -70,12 +70,11 @@ class PekerjaanService implements PekerjaanInterface
 
                 if (isset($material['gambar'])) {
                     foreach ($material['gambar'] as $gambar) {
-                        $fileName = time() . '_' . $gambar->getClientOriginalName();
-                        $gambar->move(public_path('images'), $fileName);
+                        $file = $gambar->store('images', 'public');
 
                         GambarMaterial::create([
                             'material_dikembalikan_id' => $materialDikembalikan->id,
-                            'gambar' => 'images/' . $fileName
+                            'gambar' => $file
                         ]);
                     }
                 }
@@ -169,11 +168,10 @@ class PekerjaanService implements PekerjaanInterface
                     }
 
                     foreach ($material['gambar'] as $gambar) {
-                        $fileName = time() . '_' . $gambar->getClientOriginalName();
-                        $gambar->move(public_path('images'), $fileName);
+                        $file = $gambar->store('images', 'public');
                         GambarMaterial::create([
                             'material_dikembalikan_id' => $materialDikembalikan->id,
-                            'gambar' => 'images/' . $fileName
+                            'gambar' => $file
                         ]);
                     }
                 }
