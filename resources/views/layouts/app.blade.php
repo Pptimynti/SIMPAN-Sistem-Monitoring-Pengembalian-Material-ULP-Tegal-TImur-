@@ -34,7 +34,7 @@
 
       <!-- Heading -->
       <div
-         class="inset-x-0 top-0 fixed bg-[#136782] h-16 flex justify-between p-2 items-center dark:bg-gray-700 md:p-4 md:h-20">
+         class="inset-x-0 top-0 fixed bg-[#136782] h-16 flex justify-between p-2 items-center dark:bg-gray-700 md:p-4 md:h-20 z-20">
          <button id="toggleSB" type="button">
             <svg viewBox="0 0 24 24" width="24" height="24" stroke="white" stroke-width="2" fill="none"
                stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
