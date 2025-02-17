@@ -31,11 +31,10 @@ class PetugasController extends Controller
 
     public function tambahPengembalianMaterial(Request $request)
     {
-        Log::info($request->all);
         if ($this->pekerjaanService->tambahPekerjaan($request->all())) {
             return redirect(route('petugas.pengembalian-material'))->with('success', 'Berhasil menambahkan pengembalian material');
         } else {
-            return redirect()->back()->with('error', 'Gagal menambahkan pengembalian material');
+            return redirect(route('petugas.pengembalian-material'))->with('error', 'Gagal menambahkan pengembalian material');
         }
     }
 }
