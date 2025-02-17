@@ -125,7 +125,7 @@
 
       <!-- Sidebar -->
       <div id="sidebar"
-         class="fixed inset-y-0 w-72 bg-[#1e243a] p-4 -translate-x-72 transition-all duration-150 z-20">
+         class="fixed inset-y-0 w-72 bg-[#1e243a] p-4 -translate-x-72 transition-all duration-150 z-20 lg:translate-x-0 dark:bg-gray-600 lg:transition-none lg:duration-0">
          <div class="w-full flex gap-2">
             <img src="{{ asset('images/pln.png') }}" alt="" class="w-14 h-14">
             <div>
@@ -172,7 +172,7 @@
       </div>
 
       <!-- Page Content -->
-      <main class="px-2 py-4 md:py-6 md:px-4">
+      <main class="px-2 py-4 md:py-6 md:px-4 lg:ml-72">
          {{ $slot }}
       </main>
    </div>
