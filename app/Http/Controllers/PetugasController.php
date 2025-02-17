@@ -31,6 +31,7 @@ class PetugasController extends Controller
 
     public function tambahPengembalianMaterial(Request $request)
     {
+        Log::info('Data yang diterima untuk tambah:', $request->all());
         if ($this->pekerjaanService->tambahPekerjaan($request->all())) {
             return redirect(route('petugas.pengembalian-material'))->with('success', 'Berhasil menambahkan pengembalian material');
         } else {
