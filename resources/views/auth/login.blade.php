@@ -1,5 +1,5 @@
 <x-guest-layout>
-   <div class="bg-cover bg-center bg-fixed" style="background-image: url('{{ asset('storage/images/bg-login.jpg') }}')">
+   <div class="bg-cover bg-center bg-fixed" style="background-image: url('{{ asset('images/bg-login.jpg') }}')">
       <div class="h-screen flex justify-center items-center">
          <div class="bg-white mx-4 p-8 rounded shadow-md w-full md:w-1/2 lg:w-1/3">
             <h1 class="text-3xl font-bold mb-8 text-center text-gray-800">Login</h1>
