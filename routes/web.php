@@ -13,7 +13,7 @@ Route::get('/', function () {
 
 require __DIR__ . '/auth.php';
 
-Route::controller(AdminController::class)->prefix('/admin')->middleware(AdminMiddleware::class)->group(function () {
+Route::controller(AdminController::class)->prefix('/admin')->group(function () {
     Route::get('/dashboard', 'dashboard')->name('admin.dashboard');
     Route::get('/pengembalian-material', 'pengembalianMaterial')->name('admin.pengembalian-material');
     Route::get('/pengembalian-material/{pekerjaanId}/edit', 'editPengembalianMaterial')->name('admin.edit.pengembalian-material');
@@ -28,7 +28,7 @@ Route::controller(AdminController::class)->prefix('/admin')->middleware(AdminMid
     Route::delete('/profile', 'profileDestroy')->name('profile.destroy');
 });
 
-Route::controller(PetugasController::class)->prefix('/petugas')->middleware(PetugasMiddleware::class)->group(function () {
+Route::controller(PetugasController::class)->prefix('/petugas')->group(function () {
     Route::get('/dashboard', 'dashboard')->name('petugas.dashboard');
     Route::get('/pengembalian-material', 'pengembalianMaterial')->name('petugas.pengembalian-material');
     Route::get('/pengembalian-material/tambah', 'halamanTambahPengembalianMaterial')->name('petugas.halaman.tambah.pengembalian-material');
