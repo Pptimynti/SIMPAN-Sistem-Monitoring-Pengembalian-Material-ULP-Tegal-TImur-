@@ -8,7 +8,7 @@ use App\Http\Middleware\PetugasMiddleware;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('auth.login');
+    return view('welcome');
 });
 
 require __DIR__ . '/auth.php';
