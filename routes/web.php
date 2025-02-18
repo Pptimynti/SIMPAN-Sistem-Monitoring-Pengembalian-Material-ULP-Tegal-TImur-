@@ -7,10 +7,6 @@ use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\PetugasMiddleware;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
 require __DIR__ . '/auth.php';
 
 Route::controller(AdminController::class)->prefix('/admin')->middleware(AdminMiddleware::class)->group(function () {
