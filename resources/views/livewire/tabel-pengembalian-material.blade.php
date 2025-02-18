@@ -100,7 +100,7 @@
                         <td class="px-6 py-5 border">
                            <div class="flex flex-wrap gap-2">
                               @foreach ($materialD->gambarMaterials as $gambar)
-                                 <img role="button" data-src="{{ asset('storage/images/' . $gambar->gambar) }}"
+                                 <img role="button" data-src="{{ asset('storage/' . $gambar->gambar) }}"
                                     src="{{ asset('storage/' . $gambar->gambar) }}" alt="{{ $materialD->nama }}"
                                     class="materialImages w-20 h-20 object-cover rounded border">
                               @endforeach
