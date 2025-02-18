@@ -40,7 +40,7 @@ class PekerjaanService implements PekerjaanInterface
             'material_dikembalikan.*.jumlah' => 'required|integer|min:1',
 
             'material_dikembalikan.*.gambar' => 'required|array',
-            'material_dikembalikan.*.gambar.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'material_dikembalikan.*.gambar.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:10240',
         ]);
 
         if ($validator->fails()) {
@@ -108,7 +108,7 @@ class PekerjaanService implements PekerjaanInterface
             'material_dikembalikan.*.jumlah' => 'required|integer|min:1',
 
             'material_dikembalikan.*.gambar' => 'nullable|array',
-            'material_dikembalikan.*.gambar.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'material_dikembalikan.*.gambar.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
         ]);
 
         if ($validator->fails()) {

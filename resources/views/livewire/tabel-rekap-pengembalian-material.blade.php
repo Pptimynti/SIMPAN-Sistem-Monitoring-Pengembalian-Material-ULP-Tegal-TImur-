@@ -1,8 +1,9 @@
 <div>
    <div class="flex flex-col gap-2 md:flex-row md:items-center lg:justify-between">
       <!-- Date Range Picker -->
-      <div class="flex items-center">
-         <div class="relative">
+      <div class="flex items-center gap-2 w-full">
+         <div class="relative w-full">
+            <!-- Start Date Input -->
             <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor" viewBox="0 0 20 20">
@@ -11,10 +12,14 @@
                </svg>
             </div>
             <input id="datepicker-range-start" name="start" type="date" wire:model.live.debounce.100ms="startDate"
-               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
          </div>
-         <span class="mx-4 text-gray-500">to</span>
-         <div class="relative">
+
+         <!-- To Text -->
+         <span class="text-gray-500">to</span>
+
+         <!-- End Date Input -->
+         <div class="relative w-full">
             <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
@@ -23,7 +28,7 @@
                </svg>
             </div>
             <input id="datepicker-range-end" name="end" type="date" wire:model.live.debounce.100ms="endDate"
-               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
          </div>
       </div>
 
@@ -161,7 +166,7 @@
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
          </svg>
          <h2 class="text-xl font-semibold">Hasil Tidak Ditemukan</h2>
-         <p class="text-gray-500 mt-2">Coba gunakan kata kunci lain atau periksa ejaan pencarian Anda.</p>
+         <p class="text-gray-500 mt-2 text-center">Coba gunakan kata kunci lain atau tambahkan data.</p>
       </div>
    @endif
 </div>

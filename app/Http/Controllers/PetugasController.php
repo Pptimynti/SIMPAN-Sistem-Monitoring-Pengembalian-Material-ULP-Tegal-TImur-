@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Pekerjaan;
 use App\Services\PekerjaanInterface;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Log;
 
@@ -21,7 +23,8 @@ class PetugasController extends Controller
 
     public function pengembalianMaterial()
     {
-        return view('petugas.pengembalian-material');
+        $pekerjaans = Pekerjaan::with('materialDikembalikans.gambarMaterials')->where('created_at', Carbon::parse(today()));
+        return view('petugas.pengembalian-material', compact('pekerjaans'));
     }
 
     public function halamanTambahPengembalianMaterial()
@@ -35,7 +38,7 @@ class PetugasController extends Controller
         if ($this->pekerjaanService->tambahPekerjaan($request->all())) {
             return redirect(route('petugas.pengembalian-material'))->with('success', 'Berhasil menambahkan pengembalian material');
         } else {
-            return redirect(route('petugas.pengembalian-material'))->with('error', 'Gagal menambahkan pengembalian material');
+            return redirect()->back()->with('error', 'Gagal menambahkan pengembalian material');
         }
     }
 }

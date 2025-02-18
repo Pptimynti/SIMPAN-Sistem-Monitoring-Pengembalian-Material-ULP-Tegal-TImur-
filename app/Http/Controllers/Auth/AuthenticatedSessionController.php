@@ -28,7 +28,14 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        $user = Auth::user();
+        if ($user->role === 'petugas') {
+            return redirect(route('petugas.dashboard'));
+        } else if ($user->role === 'admin') {
+            return redirect(route('admin.dashboard'));
+        } else {
+            abort(404);
+        }
     }
 
     /**
@@ -42,6 +49,6 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect(route('login'));
     }
 }

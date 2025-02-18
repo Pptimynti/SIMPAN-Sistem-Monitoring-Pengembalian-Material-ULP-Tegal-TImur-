@@ -34,7 +34,7 @@
 
       <!-- Heading -->
       <div
-         class="inset-x-0 top-0 fixed bg-[#136782] h-16 flex justify-between p-2 items-center dark:bg-gray-700 md:p-4 md:h-20 z-20">
+         class="inset-x-0 top-0 fixed bg-[#136782] h-16 flex justify-between p-2 items-center dark:bg-gray-700 md:p-4 md:h-20 z-10">
          <button id="toggleSB" type="button">
             <svg viewBox="0 0 24 24" width="24" height="24" stroke="white" stroke-width="2" fill="none"
                stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
@@ -91,32 +91,24 @@
                   id="dropdown-user">
                   <div class="px-4 py-3" role="none">
                      <p class="text-sm text-gray-900 dark:text-white" role="none">
-                        Neil Sims
+                        {{ Auth::user()->name }}
                      </p>
                      <p class="text-sm font-medium text-gray-900 truncate dark:text-gray-300" role="none">
-                        neil.sims@flowbite.com
+                        {{ Auth::user()->email }}
                      </p>
                   </div>
                   <ul class="py-1" role="none">
                      <li>
-                        <a href="#"
+                        <a href="{{ route('profile.edit') }}"
                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                           role="menuitem">Dashboard</a>
+                           role="menuitem">User Profile</a>
                      </li>
                      <li>
-                        <a href="#"
-                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                           role="menuitem">Settings</a>
-                     </li>
-                     <li>
-                        <a href="#"
-                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                           role="menuitem">Earnings</a>
-                     </li>
-                     <li>
-                        <a href="#"
-                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                           role="menuitem">Sign out</a>
+                        <form action="{{ route('logout') }}" method="POST"
+                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white">
+                           @csrf
+                           <button class="w-full block text-left" type="submit" role="menuitem">Sign out</button>
+                        </form>
                      </li>
                   </ul>
                </div>
@@ -137,33 +129,49 @@
          <div class="w-full border-[.5px] border-white mt-4"></div>
          <div class="w-full mt-4">
             <!-- Menu -->
-            <div id="dashboard" data-url="{{ route('admin.dashboard') }}" role="button"
+            <div id="dashboard"
+               @php $dashboardUrl = Auth::user()->role === 'admin' ? route('admin.dashboard') : (Auth::user()->role === 'petugas' ? route('petugas.dashboard') : null); @endphp
+               @if ($dashboardUrl) data-url="{{ $dashboardUrl }}" @endif role="button"
                class="w-full flex gap-4 items-center group py-2 mb-3">
+
                <svg viewBox="0 0 24 24" width="24" height="24" stroke="white" stroke-width="2"
                   fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
                   <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                   <polyline points="9 22 9 12 15 12 15 22"></polyline>
                </svg>
+
                <p class="text-white text-lg group-hover:text-blue-gray-200">Dashboard</p>
             </div>
-            <div id="pengembalianMaterial" data-url="{{ route('admin.pengembalian-material') }}" role="button"
-               class="w-full flex gap-4 items-center group py-2 mb-3">
-               <svg viewBox="0 0 24 24" width="24" height="24" stroke="white" stroke-width="2"
-                  fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
-                  <polyline points="9 10 4 15 9 20"></polyline>
-                  <path d="M20 4v7a4 4 0 0 1-4 4H4"></path>
-               </svg>
-               <p class="text-white text-lg group-hover:text-blue-gray-200">Pengembalian Material</p>
-            </div>
-            <div id="rekap" data-url="{{ route('admin.laporan.pengembalian-material') }}" role="button"
-               class="w-full flex gap-4 items-center group py-2 mb-3">
-               <svg viewBox="0 0 24 24" width="24" height="24" stroke="white" stroke-width="2"
-                  fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
-                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-               </svg>
-               <p class="text-white text-lg group-hover:text-blue-gray-200">Rekapan</p>
-            </div>
+            @if (Auth::user()->role === 'admin')
+               <div id="pengembalianMaterial" data-url="{{ route('admin.pengembalian-material') }}" role="button"
+                  class="w-full flex gap-4 items-center group py-2 mb-3">
+                  <svg viewBox="0 0 24 24" width="24" height="24" stroke="white" stroke-width="2"
+                     fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
+                     <polyline points="9 10 4 15 9 20"></polyline>
+                     <path d="M20 4v7a4 4 0 0 1-4 4H4"></path>
+                  </svg>
+                  <p class="text-white text-lg group-hover:text-blue-gray-200">Pengembalian Material</p>
+               </div>
+               <div id="rekap" data-url="{{ route('admin.laporan.pengembalian-material') }}" role="button"
+                  class="w-full flex gap-4 items-center group py-2 mb-3">
+                  <svg viewBox="0 0 24 24" width="24" height="24" stroke="white" stroke-width="2"
+                     fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
+                     <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                     <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                  </svg>
+                  <p class="text-white text-lg group-hover:text-blue-gray-200">Rekapan</p>
+               </div>
+            @else
+               <div id="pengembalianMaterialPetugas" data-url="{{ route('petugas.pengembalian-material') }}"
+                  role="button" class="w-full flex gap-4 items-center group py-2 mb-3">
+                  <svg viewBox="0 0 24 24" width="24" height="24" stroke="white" stroke-width="2"
+                     fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
+                     <polyline points="9 10 4 15 9 20"></polyline>
+                     <path d="M20 4v7a4 4 0 0 1-4 4H4"></path>
+                  </svg>
+                  <p class="text-white text-lg group-hover:text-blue-gray-200">Pengembalian Material</p>
+               </div>
+            @endif
          </div>
       </div>
 
@@ -199,7 +207,7 @@
          }
       });
 
-      let links = document.querySelectorAll('#dashboard, #pengembalianMaterial, #rekap');
+      let links = document.querySelectorAll('#dashboard, #pengembalianMaterial, #rekap, #pengembalianMaterialPetugas');
       links.forEach(btn => {
          btn.addEventListener('click', function() {
             let link = this.dataset.url;

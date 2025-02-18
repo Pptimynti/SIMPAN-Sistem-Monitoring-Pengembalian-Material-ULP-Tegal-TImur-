@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Exports\DetailRekapPengembalianMaterial;
+use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\Pekerjaan;
 use App\Services\PekerjaanInterface;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Log;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -82,5 +85,41 @@ class AdminController extends Controller
         }, 'detail-pengembalian-material.pdf');
     }
 
+    public function profileEdit(Request $request)
+    {
+        return view('profile.edit', [
+            'user' => $request->user(),
+        ]);
+    }
 
+    public function profileUpdate(ProfileUpdateRequest $request)
+    {
+        $request->user()->fill($request->validated());
+
+        if ($request->user()->isDirty('email')) {
+            $request->user()->email_verified_at = null;
+        }
+
+        $request->user()->save();
+
+        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+    }
+
+    public function profileDestroy(Request $request)
+    {
+        $request->validateWithBag('userDeletion', [
+            'password' => ['required', 'current_password'],
+        ]);
+
+        $user = $request->user();
+
+        Auth::logout();
+
+        $user->delete();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return Redirect::to(route('login'));
+    }
 }

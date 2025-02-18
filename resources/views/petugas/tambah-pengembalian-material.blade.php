@@ -62,6 +62,14 @@
 </x-app-layout>
 <x-script>
    <script>
+      document.addEventListener('load', function() {
+         if (session('error'))
+            Swal.fire({
+               title: "{{ session('error') }}",
+               icon: "error",
+               draggable: true
+            });
+      });
       document.getElementById('tambahMaterialBtn').addEventListener('click', function() {
          let container = document.getElementById('materialContainer');
          let index = document.querySelectorAll('.material-item').length;
