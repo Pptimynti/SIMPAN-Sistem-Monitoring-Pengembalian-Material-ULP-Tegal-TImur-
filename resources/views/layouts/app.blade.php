@@ -143,6 +143,28 @@
                <p class="text-white text-lg group-hover:text-blue-gray-200">Dashboard</p>
             </div>
             @if (Auth::user()->role === 'admin')
+               <div id="materials" data-url="{{ route('admin.daftar-material') }}" role="button"
+                  class="w-full flex gap-4 items-center group py-2 mb-3">
+                  <svg viewBox="0 0 24 24" width="24" height="24" stroke="white" stroke-width="2"
+                     fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
+                     <line x1="8" y1="6" x2="21" y2="6"></line>
+                     <line x1="8" y1="12" x2="21" y2="12"></line>
+                     <line x1="8" y1="18" x2="21" y2="18"></line>
+                     <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                     <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                     <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                  </svg>
+                  <p class="text-white text-lg group-hover:text-blue-gray-200">Data Material</p>
+               </div>
+               <div id="users" data-url="{{ route('admin.users') }}" role="button"
+                  class="w-full flex gap-4 items-center group py-2 mb-3">
+                  <svg viewBox="0 0 24 24" width="24" height="24" stroke="white" stroke-width="2"
+                     fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
+                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                     <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                  <p class="text-white text-lg group-hover:text-blue-gray-200">Data User</p>
+               </div>
                <div id="pengembalianMaterial" data-url="{{ route('admin.pengembalian-material') }}" role="button"
                   class="w-full flex gap-4 items-center group py-2 mb-3">
                   <svg viewBox="0 0 24 24" width="24" height="24" stroke="white" stroke-width="2"
@@ -152,6 +174,16 @@
                   </svg>
                   <p class="text-white text-lg group-hover:text-blue-gray-200">Pengembalian Material</p>
                </div>
+               <div id="stokMaterialReturn" data-url="{{ route('admin.material-return') }}" role="button"
+                  class="w-full flex gap-4 items-center group py-2 mb-3">
+                  <svg viewBox="0 0 24 24" width="24" height="24" stroke="white" stroke-width="2"
+                     fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
+                     <polyline points="21 8 21 21 3 21 3 8"></polyline>
+                     <rect x="1" y="3" width="22" height="5"></rect>
+                     <line x1="10" y1="12" x2="14" y2="12"></line>
+                  </svg>
+                  <p class="text-white text-lg group-hover:text-blue-gray-200">Stok Material Return</p>
+               </div>
                <div id="rekap" data-url="{{ route('admin.laporan.pengembalian-material') }}" role="button"
                   class="w-full flex gap-4 items-center group py-2 mb-3">
                   <svg viewBox="0 0 24 24" width="24" height="24" stroke="white" stroke-width="2"
@@ -159,7 +191,7 @@
                      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
                      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
                   </svg>
-                  <p class="text-white text-lg group-hover:text-blue-gray-200">Rekapan</p>
+                  <p class="text-white text-lg group-hover:text-blue-gray-200">Rekap Data</p>
                </div>
             @else
                <div id="pengembalianMaterialPetugas" data-url="{{ route('petugas.pengembalian-material') }}"
@@ -181,7 +213,7 @@
       </div>
 
       <!-- Page Content -->
-      <main class="px-2 py-4 mt-16 md:py-6 md:px-4 md:mt-20 lg:ml-72">
+      <main class="px-2 pt-20 md:px-4 md:pt-28 lg:ml-72">
          {{ $slot }}
       </main>
    </div>
@@ -207,7 +239,9 @@
          }
       });
 
-      let links = document.querySelectorAll('#dashboard, #pengembalianMaterial, #rekap, #pengembalianMaterialPetugas');
+      let links = document.querySelectorAll(
+         '#dashboard, #pengembalianMaterial, #rekap, #pengembalianMaterialPetugas, #users, #stokMaterialReturn, #materials'
+      );
       links.forEach(btn => {
          btn.addEventListener('click', function() {
             let link = this.dataset.url;

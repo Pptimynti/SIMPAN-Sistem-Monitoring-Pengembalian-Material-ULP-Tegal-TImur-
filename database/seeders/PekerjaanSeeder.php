@@ -15,6 +15,8 @@ class PekerjaanSeeder extends Seeder
     {
         Pekerjaan::create([
             'no_agenda' => 'Kereng',
+            'no_pk' => 'afafasfafd',
+            'tanggal_pk' => now(),
             'petugas' => 'Mahar',
             'nama_pelanggan' => 'Jooko',
             'mutasi' => 'Pemasangan baru',

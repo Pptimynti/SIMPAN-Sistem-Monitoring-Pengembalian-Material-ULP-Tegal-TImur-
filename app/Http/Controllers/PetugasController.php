@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Material;
 use App\Models\Pekerjaan;
 use App\Services\PekerjaanInterface;
 use Carbon\Carbon;
@@ -29,7 +30,8 @@ class PetugasController extends Controller
 
     public function halamanTambahPengembalianMaterial()
     {
-        return view('petugas.tambah-pengembalian-material');
+        $materials = Material::all();
+        return view('petugas.tambah-pengembalian-material', compact('materials'));
     }
 
     public function tambahPengembalianMaterial(Request $request)

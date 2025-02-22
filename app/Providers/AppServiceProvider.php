@@ -2,8 +2,12 @@
 
 namespace App\Providers;
 
+use App\Services\Implementations\MaterialService;
 use App\Services\Implementations\PekerjaanService;
+use App\Services\Implementations\UserService;
+use App\Services\MaterialInterface;
 use App\Services\PekerjaanInterface;
+use App\Services\UserInterface;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Support\ServiceProvider;
@@ -14,7 +18,10 @@ class AppServiceProvider extends ServiceProvider
 {
     public $singletons = [
         PekerjaanInterface::class => PekerjaanService::class,
+        UserInterface::class => UserService::class,
+        MaterialInterface::class => MaterialService::class
     ];
+
     public function register(): void
     {
 

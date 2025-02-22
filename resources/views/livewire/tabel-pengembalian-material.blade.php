@@ -94,7 +94,7 @@
                               {{ $pekerjaan->mutasi }}
                            </td>
                         @endif
-                        <td class="px-6 py-5 border">{{ $materialD->nama }}</td>
+                        <td class="px-6 py-5 border">{{ $materialD->material->nama }}</td>
                         <td class="px-6 py-5 font-bold text-gray-800 dark:text-white border">x{{ $materialD->jumlah }}
                         </td>
                         <td class="px-6 py-5 border">

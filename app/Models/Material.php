@@ -5,9 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Pekerjaan extends Model
+class Material extends Model
 {
-    protected $fillable = ['no_agenda', 'petugas', 'nama_pelanggan', 'mutasi', 'no_pk', 'tanggal_pk'];
+    protected $fillable = ['nama', 'satuan'];
+
+    
+    public function materialBekas(): HasMany
+    {
+        return $this->hasMany(MaterialBekas::class);
+    }
 
     public function materialDikembalikans(): HasMany
     {

@@ -12,7 +12,7 @@
       document.addEventListener("DOMContentLoaded", function() {
          @if (session('success'))
             Swal.fire({
-               title: "{{ session('success') }}",
+               title: "Berhasil!",
                icon: "success",
                draggable: true
             });

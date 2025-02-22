@@ -3,12 +3,16 @@
 namespace Tests\Feature;
 
 use App\Models\GambarMaterial;
+use App\Models\Material;
+use App\Models\MaterialBekas;
 use App\Models\MaterialDikembalikan;
 use App\Models\Pekerjaan;
 use App\Services\PekerjaanInterface;
 use Database\Seeders\GambarMaterialSeeder;
 use Database\Seeders\MaterialDikembalikanSeeder;
+use Database\Seeders\MaterialSeeder;
 use Database\Seeders\PekerjaanSeeder;
+use Date;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
@@ -34,74 +38,70 @@ class PekerjaanServiceTest extends TestCase
 
     public function testStorePekerjaan()
     {
+        $this->seed(MaterialSeeder::class);
+        $material = Material::first();
         $data = [
             'no_agenda' => 'Kereng',
+            'no_pk' => 'adfasdfasf',
+            'tanggal_pk' => now(),
             'petugas' => 'Mahar',
             'nama_pelanggan' => 'Jooko',
             'mutasi' => 'Pemasangan baru',
             'material_dikembalikan' => [
                 [
-                    'nama' => 'KWH',
+                    'material_id' => $material->id,
                     'jumlah' => 20,
                     'gambar' => [
                         UploadedFile::fake()->image('image.jpg')
                     ]
                 ],
-                [
-                    'nama' => 'MCB',
-                    'jumlah' => 20,
-                    'gambar' => [
-                        UploadedFile::fake()->image('image.jpg')
-                    ]
-                ]
             ],
         ];
 
         self::assertTrue($this->pekerjaanService->tambahPekerjaan($data));
+        self::assertCount(1, MaterialBekas::all());
     }
 
     public function testUpdatePekerjaan()
     {
-        $this->seed([PekerjaanSeeder::class, MaterialDikembalikanSeeder::class, GambarMaterialSeeder::class]);
+        $this->seed([PekerjaanSeeder::class, MaterialSeeder::class, MaterialDikembalikanSeeder::class, GambarMaterialSeeder::class]);
         $pekerjaan = Pekerjaan::first();
         self::assertEquals('Mahar', $pekerjaan->petugas);
         $materialDikembalikan = MaterialDikembalikan::first();
-        self::assertEquals('KWH', $materialDikembalikan->nama);
+        self::assertEquals('KWH', $materialDikembalikan->material->nama);
         $gambarMaterial = GambarMaterial::first();
         self::assertEquals($materialDikembalikan->id, $gambarMaterial->material_dikembalikan_id);
+        $material = Material::first();
+        self::assertEquals('KWH', $material->nama);
 
         $data = [
             'no_agenda' => 'Kereng',
             'petugas' => 'Dhika',
+            'no_pk' => 'afafaadfadfaf',
+            'tanggal_pk' => now(),
             'nama_pelanggan' => 'Jooko',
             'mutasi' => 'Pemasangan baru',
             'material_dikembalikan' => [
                 [
                     'id' => $materialDikembalikan->id,
-                    'nama' => 'Kabel',
+                    'material_id' => $material->id,
                     'jumlah' => 100,
                     'gambar' => [
                         UploadedFile::fake()->image('newImage.jpg'),
                     ]
                 ],
-                [
-                    'nama' => 'KWH',
-                    'jumlah' => 10,
-                    'gambar' => [
-                        UploadedFile::fake()->image('newImage.jpg')
-                    ],
-                ]
             ]
         ];
 
         self::assertTrue($this->pekerjaanService->updatePekerjaan($pekerjaan->id, $data));
         self::assertEquals('Dhika', Pekerjaan::first()->petugas);
-        self::assertEquals('Kabel', MaterialDikembalikan::first()->nama);
 
         $materialDikembalikans = MaterialDikembalikan::all();
         foreach ($materialDikembalikans as $material) {
             Log::debug('Voba gays', ['material' => $material]);
         }
+
+        self::assertEquals(100, MaterialBekas::first()->stok);
     }
 
     public function testHapusPekerjaan()

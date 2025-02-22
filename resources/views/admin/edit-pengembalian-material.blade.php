@@ -12,6 +12,19 @@
             class="shadow-xs bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500" />
       </div>
 
+      <div class="mb-3 grid grid-cols-2 gap-3">
+         <div>
+            <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Nomor PK</label>
+            <input type="text" name="no_pk" required value="{{ $pekerjaan->no_pk }}"
+               class="shadow-xs bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500" />
+         </div>
+         <div>
+            <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Tanggal PK</label>
+            <input type="date" name="tanggal_pk" required value="{{ $pekerjaan->tanggal_pk }}"
+               class="shadow-xs bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500" />
+         </div>
+      </div>
+
       <div class="mb-2">
          <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Nama Petugas</label>
          <input type="text" name="petugas" required value="{{ $pekerjaan->petugas }}"
@@ -35,7 +48,7 @@
             <div class="md:w-full md:flex md:items-start md:gap-4">
                @foreach ($material->gambarMaterials as $gambar)
                   <div class="w-full h-96 mb-2 mt-2 md:mt-0 md:mb-6">
-                     <img src="{{ asset('storage/images/' . $gambar->gambar) }}" alt=""
+                     <img src="{{ asset('storage/' . $gambar->gambar) }}" alt=""
                         class="w-full h-full bg-cover bg-center">
                   </div>
                @endforeach
@@ -44,9 +57,14 @@
                      value="{{ $material->id }}">
                   <div class="col-span-1">
                      <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Material</label>
-                     <input type="text" name="material_dikembalikan[{{ $index }}][nama]" required
-                        value="{{ $material->nama }}"
-                        class="shadow-xs bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500" />
+                     <select name="material_dikembalikan[{{ $index }}][material_id]" required
+                        class="shadow-xs bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500">
+                        @foreach ($materials as $mat)
+                           <option value="{{ $mat->id }}"
+                              {{ $mat->id == $material->material_id ? 'selected' : '' }}>
+                              {{ $mat->nama }}</option>
+                        @endforeach
+                     </select>
                   </div>
                   <div class="col-span-1">
                      <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Jumlah</label>

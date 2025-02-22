@@ -1,4 +1,5 @@
 <x-app-layout>
+   <h2 class="font-bold text-2xl mb-6">Dashboard Admin</h2>
    <div class="w-full grid md:grid-cols-3 gap-4">
       @for ($i = 1; $i <= 6; $i++)
          <div class="p-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">

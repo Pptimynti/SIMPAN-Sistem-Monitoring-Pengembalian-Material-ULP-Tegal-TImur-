@@ -10,14 +10,10 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('pekerjaans', function (Blueprint $table) {
+        Schema::create('materials', function (Blueprint $table) {
             $table->id();
-            $table->string('no_pk');
-            $table->date('tanggal_pk');
-            $table->string('no_agenda');
-            $table->string('petugas');
-            $table->string('nama_pelanggan');
-            $table->string('mutasi');
+            $table->string('nama');
+            $table->string('satuan');
             $table->timestamps();
         });
     }
@@ -27,6 +23,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('pekerjaans');
+        Schema::dropIfExists('materials');
     }
 };

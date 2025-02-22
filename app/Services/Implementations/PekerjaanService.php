@@ -3,6 +3,8 @@
 namespace App\Services\Implementations;
 
 use App\Models\GambarMaterial;
+use App\Models\Material;
+use App\Models\MaterialBekas;
 use App\Models\MaterialDikembalikan;
 use App\Models\Pekerjaan;
 use App\Services\PekerjaanInterface;
@@ -28,15 +30,17 @@ class PekerjaanService implements PekerjaanInterface
      */
     public function tambahPekerjaan(array $data): bool
     {
-        Log::debug('Request : ' . json_encode($data));
+        // Log::info("Tanggal PK: " . $data['tanggal_pk']->toDateTimeString());
         $validator = Validator::make($data, [
             'no_agenda' => 'required',
+            'no_pk' => 'required',
+            'tanggal_pk' => 'required|date',
             'petugas' => 'required',
             'nama_pelanggan' => 'required|max:30',
             'mutasi' => 'required',
 
             'material_dikembalikan' => 'required|array',
-            'material_dikembalikan.*.nama' => 'required|string|max:50',
+            'material_dikembalikan.*.material_id' => 'required|exists:materials,id',
             'material_dikembalikan.*.jumlah' => 'required|integer|min:1',
 
             'material_dikembalikan.*.gambar' => 'required|array',
@@ -54,6 +58,8 @@ class PekerjaanService implements PekerjaanInterface
             DB::beginTransaction();
             $pekerjaan = Pekerjaan::create([
                 'no_agenda' => $validatedData['no_agenda'],
+                'no_pk' => $validatedData['no_pk'],
+                'tanggal_pk' => $validatedData['tanggal_pk'],
                 'petugas' => $validatedData['petugas'],
                 'nama_pelanggan' => $validatedData['nama_pelanggan'],
                 'mutasi' => $validatedData['mutasi']
@@ -62,11 +68,9 @@ class PekerjaanService implements PekerjaanInterface
             foreach ($validatedData['material_dikembalikan'] as $material) {
                 $materialDikembalikan = MaterialDikembalikan::create([
                     'pekerjaan_id' => $pekerjaan['id'],
-                    'nama' => $material['nama'],
+                    'material_id' => $material['material_id'],
                     'jumlah' => $material['jumlah']
                 ]);
-
-                Log::info("Material ID: " . $materialDikembalikan->id);
 
                 if (isset($material['gambar'])) {
                     foreach ($material['gambar'] as $gambar) {
@@ -78,6 +82,11 @@ class PekerjaanService implements PekerjaanInterface
                         ]);
                     }
                 }
+
+                MaterialBekas::updateOrCreate(
+                    ['material_id' => $material['material_id']],
+                    ['stok' => \DB::raw('stok + ' . $material['jumlah'])]
+                );
             }
 
             DB::commit();
@@ -98,17 +107,17 @@ class PekerjaanService implements PekerjaanInterface
 
         $validator = Validator::make($data, [
             'no_agenda' => 'required',
+            'no_pk' => 'required',
+            'tanggal_pk' => 'required|date',
             'petugas' => 'required',
             'nama_pelanggan' => 'required|max:30',
             'mutasi' => 'required',
-
             'material_dikembalikan' => 'required|array',
             'material_dikembalikan.*.id' => 'nullable|exists:material_dikembalikans,id',
-            'material_dikembalikan.*.nama' => 'required|string|max:50',
+            'material_dikembalikan.*.material_id' => 'required|exists:materials,id',
             'material_dikembalikan.*.jumlah' => 'required|integer|min:1',
-
             'material_dikembalikan.*.gambar' => 'nullable|array',
-            'material_dikembalikan.*.gambar.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
+            'material_dikembalikan.*.gambar.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240'
         ]);
 
         if ($validator->fails()) {
@@ -123,45 +132,25 @@ class PekerjaanService implements PekerjaanInterface
             DB::beginTransaction();
 
             $pekerjaan = Pekerjaan::findOrFail($idPekerjaan);
-            Log::debug('Pekerjaan ditemukan: ', $pekerjaan->toArray());
-
-            $pekerjaan->update([
-                'no_agenda' => $validatedData['no_agenda'],
-                'petugas' => $validatedData['petugas'],
-                'nama_pelanggan' => $validatedData['nama_pelanggan'],
-                'mutasi' => $validatedData['mutasi']
-            ]);
-            Log::info('Pekerjaan berhasil diperbarui', ['id' => $pekerjaan->id]);
+            $pekerjaan->update(['no_agenda' => $validatedData['no_agenda'], 'no_pk' => $validatedData['no_pk'], 'tanggal_pk' => $validatedData['tanggal_pk'], 'petugas' => $validatedData['petugas'], 'nama_pelanggan' => $validatedData['nama_pelanggan'], 'mutasi' => $validatedData['mutasi']]);
 
             $materialIds = [];
 
             foreach ($validatedData['material_dikembalikan'] as $material) {
                 if (isset($material['id'])) {
                     $existingMaterial = MaterialDikembalikan::findOrFail($material['id']);
-                    Log::debug('Material ditemukan untuk update: ', $existingMaterial->toArray());
-
-                    $existingMaterial->update([
-                        'nama' => $material['nama'],
-                        'jumlah' => $material['jumlah']
-                    ]);
+                    $existingMaterial->update(['material_id' => $material['material_id'], 'jumlah' => $material['jumlah']]);
                     $materialDikembalikan = $existingMaterial;
                 } else {
-                    $newMaterial = MaterialDikembalikan::create([
-                        'pekerjaan_id' => $pekerjaan->id,
-                        'nama' => $material['nama'],
-                        'jumlah' => $material['jumlah']
-                    ]);
-                    Log::info('Material baru dibuat: ', $newMaterial->toArray());
+                    $newMaterial = MaterialDikembalikan::create(['pekerjaan_id' => $pekerjaan->id, 'material_id' => $material['material_id'], 'jumlah' => $material['jumlah']]);
+                    MaterialBekas::updateOrCreate(['material_id' => $newMaterial['material_id']], ['stok' => DB::raw('COALESCE(stok, 0) + ' . $newMaterial['jumlah'])]);
                     $materialDikembalikan = $newMaterial;
                 }
 
                 $materialIds[] = $materialDikembalikan->id;
-                Log::debug('Material ID saat ini: ' . json_encode($materialIds));
 
                 if (isset($material['gambar'])) {
                     $gambarLama = GambarMaterial::where('material_dikembalikan_id', $materialDikembalikan->id)->get();
-                    Log::debug('Menghapus gambar lama: ', $gambarLama->toArray());
-
                     foreach ($gambarLama as $gbr) {
                         Storage::disk('public')->delete($gbr->gambar);
                         $gbr->delete();
@@ -169,29 +158,33 @@ class PekerjaanService implements PekerjaanInterface
 
                     foreach ($material['gambar'] as $gambar) {
                         $file = $gambar->store('images', 'public');
-                        GambarMaterial::create([
-                            'material_dikembalikan_id' => $materialDikembalikan->id,
-                            'gambar' => $file
-                        ]);
+                        GambarMaterial::create(['material_dikembalikan_id' => $materialDikembalikan->id, 'gambar' => $file]);
+                    }
+                }
+
+                $materialBekas = MaterialBekas::where('material_id', $material['material_id'])->first();
+                if ($materialBekas) {
+                    $stok_sekarang = $materialBekas->stok;
+                    $stok_baru = $material['jumlah'];
+                    $selisih = $stok_baru - $stok_sekarang;
+
+                    if ($selisih != 0) {
+                        $materialBekas->update(['stok' => DB::raw('stok + ' . $selisih)]);
                     }
                 }
             }
 
-            MaterialDikembalikan::where('pekerjaan_id', $pekerjaan->id)
-                ->whereNotIn('id', $materialIds)
-                ->delete();
-            Log::info('Material yang tidak ada di daftar terbaru telah dihapus.');
+            MaterialDikembalikan::where('pekerjaan_id', $pekerjaan->id)->whereNotIn('id', $materialIds)->delete();
 
             DB::commit();
-            Log::info('Transaksi berhasil!');
             return true;
-
         } catch (Exception $e) {
             Log::error('Gagal memperbarui pekerjaan: ' . $e->getMessage());
             DB::rollBack();
             return false;
         }
     }
+
 
 
 }

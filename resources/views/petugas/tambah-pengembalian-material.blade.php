@@ -11,13 +11,28 @@
             class="shadow-xs bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500" />
       </div>
 
-      <div class="mb-2">
+      <div class="mb-3">
+         <div class="grid grid-cols-2 gap-3">
+            <div>
+               <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">No PK</label>
+               <input type="text" name="no_pk" required
+                  class="shadow-xs bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500" />
+            </div>
+            <div>
+               <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Tanggal PK</label>
+               <input type="date" name="tanggal_pk" required
+                  class="shadow-xs bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500" />
+            </div>
+         </div>
+      </div>
+
+      <div class="mb-3">
          <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Nama Petugas</label>
          <input type="text" name="petugas" required
             class="shadow-xs bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500" />
       </div>
 
-      <div class="mb-2">
+      <div class="mb-3">
          <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Nama Pelanggan</label>
          <input type="text" name="nama_pelanggan" required maxlength="30"
             class="shadow-xs bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500" />
@@ -25,16 +40,23 @@
 
       <div class="mb-3">
          <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Mutasi</label>
-         <input type="text" name="mutasi" required
-            class="shadow-xs bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500" />
+         <select name="mutasi" required
+            class="shadow-xs bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500">
+            <option value="Pemasangan Baru">Pemasangan Baru</option>
+            <option value="Pencabutan">Pencabutan</option>
+         </select>
       </div>
 
       <div id="materialContainer">
          <div class="grid grid-cols-2 gap-3 material-item">
             <div class="col-span-1">
                <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Material</label>
-               <input type="text" name="material_dikembalikan[0][nama]" required
-                  class="shadow-xs bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500" />
+               <select name="material_dikembalikan[0][material_id]" required
+                  class="shadow-xs bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500">
+                  @foreach ($materials as $material)
+                     <option value="{{ $material->id }}">{{ $material->nama }}</option>
+                  @endforeach
+               </select>
             </div>
             <div class="col-span-1">
                <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Jumlah</label>
@@ -65,7 +87,7 @@
       document.addEventListener('load', function() {
          if (session('error'))
             Swal.fire({
-               title: "{{ session('error') }}",
+               title: "Gagal!",
                icon: "error",
                draggable: true
             });
@@ -81,8 +103,9 @@
          newMaterial.innerHTML = `
                 <div class="col-span-1">
                     <label class="block mb-2 text-sm font-medium text-gray-900">Material</label>
-                    <input type="text" name="material_dikembalikan[${index}][nama]" required
-                        class="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5" />
+                    <select name="material_dikembalikan[${index}][nama]" required
+                        class="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5">
+                    </select>
                 </div>
                 <div class="col-span-1">
                     <label class="block mb-2 text-sm font-medium text-gray-900">Jumlah</label>

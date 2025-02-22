@@ -10,7 +10,7 @@ class MaterialDikembalikan extends Model
 {
     protected $table = 'material_dikembalikans';
 
-    protected $fillable = ['pekerjaan_id', 'nama', 'jumlah'];
+    protected $fillable = ['pekerjaan_id', 'material_id', 'nama', 'jumlah'];
 
     public function pekerjaan(): BelongsTo
     {
@@ -20,5 +20,10 @@ class MaterialDikembalikan extends Model
     public function gambarMaterials(): HasMany
     {
         return $this->hasMany(GambarMaterial::class);
+    }
+
+    public function material(): BelongsTo
+    {
+        return $this->belongsTo(Material::class);
     }
 }

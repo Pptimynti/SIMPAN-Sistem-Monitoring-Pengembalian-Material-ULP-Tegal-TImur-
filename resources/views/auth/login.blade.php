@@ -1,8 +1,11 @@
 <x-guest-layout>
    <div class="bg-cover bg-center bg-fixed" style="background-image: url('{{ asset('images/bg-login.jpg') }}')">
       <div class="h-screen flex justify-center items-center">
-         <div class="bg-white mx-4 p-8 rounded shadow-md w-full md:w-1/2 lg:w-1/3">
-            <h1 class="text-3xl font-bold mb-8 text-center text-gray-800">Login</h1>
+         <div class="bg-white mx-4 p-8 rounded-lg shadow-md w-full md:w-1/2 lg:w-1/3">
+            <h1 class="text-2xl font-bold text-center text-gray-800">Selamat datang</h1>
+            <h2 class="mb-8 text-center text-gray-600">Selamat datang di website pengelolaan pengembalian material PLN
+               ULP Tegal Timur
+            </h2>
             <form method="POST" action="{{ route('login') }}">
                @csrf
                <!-- Email Address -->
@@ -36,7 +39,7 @@
                <!-- Submit Button -->
                <div class="flex justify-center mb-4">
                   <x-primary-button
-                     class="w-full py-3 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                     class="w-full text-center py-3 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                      {{ __('Login') }}
                   </x-primary-button>
                </div>
