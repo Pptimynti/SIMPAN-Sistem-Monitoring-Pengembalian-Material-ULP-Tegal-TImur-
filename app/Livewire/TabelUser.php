@@ -2,12 +2,18 @@
 
 namespace App\Livewire;
 
+use App\Models\User;
 use Livewire\Component;
 
 class TabelUser extends Component
 {
+    public $search = '';
+    public $perPage = 5;
     public function render()
     {
-        return view('livewire.tabel-user');
+        $users = User::where('name', 'like', "%{$this->search}%")
+            ->orWhere('email', 'like', "%{$this->search}%")
+            ->paginate($this->perPage);
+        return view('livewire.tabel-user', compact('users'));
     }
 }

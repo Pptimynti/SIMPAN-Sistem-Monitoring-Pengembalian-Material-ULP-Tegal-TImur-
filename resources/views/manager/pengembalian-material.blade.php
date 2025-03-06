@@ -3,14 +3,6 @@
 </x-app-layout>
 <x-script>
    <script>
-      let tambahBtn = document.getElementById('tambahBtn');
-      tambahBtn.addEventListener('click', function() {
-         window.location.href = this.dataset.url;
-      })
-   </script>
-</x-script>
-<x-script>
-   <script>
       let imagesLink = document.querySelectorAll('.materialImages');
       let overlayModal = document.getElementById('overlayModal');
       let modalImage = document.getElementById('modalImage');
@@ -29,14 +21,16 @@
          });
       });
 
-      document.addEventListener('click', function(event) {
-         if (!modalImage.contains(event.target)) {
-            containerModal.classList.add('pointer-events-none');
-            overlayModal.classList.add('opacity-0');
-            overlayModal.classList.remove('opacity-70');
-            modalImage.classList.add('-translate-y-[99rem]');
-            modalImage.classList.remove('-translate-y-1/2');
-         }
-      });
+      if (modalImage) {
+         document.addEventListener('click', function(event) {
+            if (!modalImage.contains(event.target)) {
+               containerModal.classList.add('pointer-events-none');
+               overlayModal.classList.add('opacity-0');
+               overlayModal.classList.remove('opacity-70');
+               modalImage.classList.add('-translate-y-[99rem]');
+               modalImage.classList.remove('-translate-y-1/2');
+            }
+         });
+      }
    </script>
 </x-script>

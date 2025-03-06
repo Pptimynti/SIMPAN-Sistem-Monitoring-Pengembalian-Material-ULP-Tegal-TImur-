@@ -13,7 +13,9 @@ return new class extends Migration {
         Schema::create('material_bekas', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('material_id');
-            $table->integer('stok');
+            $table->integer('stok_tersedia');
+            $table->integer('telah_digunakan')->nullable()->default(0);
+            $table->integer('stok_manual')->nullable()->default(0);
             $table->timestamps();
             $table->foreign('material_id')->references('id')->on('materials')->onDelete('cascade');
         });

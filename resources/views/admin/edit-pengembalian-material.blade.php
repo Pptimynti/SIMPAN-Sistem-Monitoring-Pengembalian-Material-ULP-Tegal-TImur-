@@ -107,10 +107,14 @@
          newMaterial.innerHTML = `
             <input type="hidden" name="material_dikembalikan[${index}][id]" value="">
             <div class="col-span-1">
-                <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Material</label>
-                <input type="text" name="material_dikembalikan[${index}][nama]" required
-                    class="shadow-xs bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500" />
-            </div>
+                     <label class="block mb-2 text-sm font-medium text-gray-900">Material</label>
+                     <select name="material_dikembalikan[${index}][material_id]" required
+                         class="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5">
+                         @foreach ($materials as $material)
+                             <option value="{{ $material->id }}">{{ $material->nama }}</option>
+                         @endforeach
+                     </select>
+                 </div>
             <div class="col-span-1">
                 <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Jumlah</label>
                 <input type="number" name="material_dikembalikan[${index}][jumlah]" required min="1"
@@ -131,20 +135,4 @@
          });
       });
    </script>
-   <script>
-      @if (session('success'))
-         Swal.fire({
-            title: "Drag me!",
-            icon: "success",
-            draggable: true
-         });
-      @else
-         Swal.fire({
-            title: "Gagal!",
-            icon: "warning",
-            draggable: true
-         });
-      @endif
-   </script>
-
 </x-script>

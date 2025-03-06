@@ -24,6 +24,37 @@
       [x-cloak] {
          display: none !important;
       }
+
+      .loader {
+         width: 70px;
+         aspect-ratio: 1;
+         background:
+            radial-gradient(farthest-side, #ffa516 90%, #0000) center/16px 16px,
+            radial-gradient(farthest-side, green 90%, #0000) bottom/12px 12px;
+         background-repeat: no-repeat;
+         animation: l17 1s infinite linear;
+         position: relative;
+      }
+
+      .loader::before {
+         content: "";
+         position: absolute;
+         width: 8px;
+         aspect-ratio: 1;
+         inset: auto 0 16px;
+         margin: auto;
+         background: #ccc;
+         border-radius: 50%;
+         transform-origin: 50% calc(100% + 10px);
+         animation: inherit;
+         animation-duration: 0.5s;
+      }
+
+      @keyframes l17 {
+         100% {
+            transform: rotate(1turn)
+         }
+      }
    </style>
 </head>
 
@@ -99,9 +130,10 @@
                   </div>
                   <ul class="py-1" role="none">
                      <li>
-                        <a href="{{ route('profile.edit') }}"
-                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                           role="menuitem">User Profile</a>
+                        @php $url = Auth::user()->role === 'admin' ? route('admin.profile-edit') : null @endphp
+                        <button id="profileButton" type="button" data-url="{{ route('admin.profile-edit') }}"
+                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white w-full text-left"
+                           role="menuitem">User Profile</button>
                      </li>
                      <li>
                         <form action="{{ route('logout') }}" method="POST"
@@ -130,7 +162,7 @@
          <div class="w-full mt-4">
             <!-- Menu -->
             <div id="dashboard"
-               @php $dashboardUrl = Auth::user()->role === 'admin' ? route('admin.dashboard') : (Auth::user()->role === 'petugas' ? route('petugas.dashboard') : null); @endphp
+               @php $dashboardUrl = Auth::user()->role === 'admin' ? route('admin.dashboard') : (Auth::user()->role === 'petugas' ? route('petugas.dashboard') : (Auth::user()->role === 'manager' ? route('manager.dashboard') : null)); @endphp
                @if ($dashboardUrl) data-url="{{ $dashboardUrl }}" @endif role="button"
                class="w-full flex gap-4 items-center group py-2 mb-3">
 
@@ -142,39 +174,42 @@
 
                <p class="text-white text-lg group-hover:text-blue-gray-200">Dashboard</p>
             </div>
-            @if (Auth::user()->role === 'admin')
-               <div id="materials" data-url="{{ route('admin.daftar-material') }}" role="button"
-                  class="w-full flex gap-4 items-center group py-2 mb-3">
-                  <svg viewBox="0 0 24 24" width="24" height="24" stroke="white" stroke-width="2"
-                     fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
-                     <line x1="8" y1="6" x2="21" y2="6"></line>
-                     <line x1="8" y1="12" x2="21" y2="12"></line>
-                     <line x1="8" y1="18" x2="21" y2="18"></line>
-                     <line x1="3" y1="6" x2="3.01" y2="6"></line>
-                     <line x1="3" y1="12" x2="3.01" y2="12"></line>
-                     <line x1="3" y1="18" x2="3.01" y2="18"></line>
-                  </svg>
-                  <p class="text-white text-lg group-hover:text-blue-gray-200">Data Material</p>
-               </div>
-               <div id="users" data-url="{{ route('admin.users') }}" role="button"
-                  class="w-full flex gap-4 items-center group py-2 mb-3">
-                  <svg viewBox="0 0 24 24" width="24" height="24" stroke="white" stroke-width="2"
-                     fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
-                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                     <circle cx="12" cy="7" r="4"></circle>
-                  </svg>
-                  <p class="text-white text-lg group-hover:text-blue-gray-200">Data User</p>
-               </div>
-               <div id="pengembalianMaterial" data-url="{{ route('admin.pengembalian-material') }}" role="button"
-                  class="w-full flex gap-4 items-center group py-2 mb-3">
-                  <svg viewBox="0 0 24 24" width="24" height="24" stroke="white" stroke-width="2"
-                     fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
-                     <polyline points="9 10 4 15 9 20"></polyline>
-                     <path d="M20 4v7a4 4 0 0 1-4 4H4"></path>
-                  </svg>
-                  <p class="text-white text-lg group-hover:text-blue-gray-200">Pengembalian Material</p>
-               </div>
-               <div id="stokMaterialReturn" data-url="{{ route('admin.material-return') }}" role="button"
+            @if (Auth::user()->role === 'admin' || Auth::user()->role === 'manager')
+               @if (Auth::user()->role === 'admin')
+                  <div id="materials" data-url="{{ route('admin.daftar-material') }}" role="button"
+                     class="w-full flex gap-4 items-center group py-2 mb-3">
+                     <svg viewBox="0 0 24 24" width="24" height="24" stroke="white" stroke-width="2"
+                        fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
+                        <line x1="8" y1="6" x2="21" y2="6"></line>
+                        <line x1="8" y1="12" x2="21" y2="12"></line>
+                        <line x1="8" y1="18" x2="21" y2="18"></line>
+                        <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                        <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                        <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                     </svg>
+                     <p class="text-white text-lg group-hover:text-blue-gray-200">Data Material</p>
+                  </div>
+                  <div id="users" data-url="{{ route('admin.users') }}" role="button"
+                     class="w-full flex gap-4 items-center group py-2 mb-3">
+                     <svg viewBox="0 0 24 24" width="24" height="24" stroke="white" stroke-width="2"
+                        fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                     </svg>
+                     <p class="text-white text-lg group-hover:text-blue-gray-200">Data User</p>
+                  </div>
+                  <div id="pengembalianMaterial" data-url="{{ route('admin.pengembalian-material') }}"
+                     role="button" class="w-full flex gap-4 items-center group py-2 mb-3">
+                     <svg viewBox="0 0 24 24" width="24" height="24" stroke="white" stroke-width="2"
+                        fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
+                        <polyline points="9 10 4 15 9 20"></polyline>
+                        <path d="M20 4v7a4 4 0 0 1-4 4H4"></path>
+                     </svg>
+                     <p class="text-white text-lg group-hover:text-blue-gray-200">Pengembalian Material</p>
+                  </div>
+               @endif
+               @php $stokUrl = Auth::user()->role === 'admin' ? route('admin.material-return') : (Auth::user()->role === 'manager' ? route('manager.stok-material-return') : null) @endphp
+               <div id="stokMaterialReturn" data-url="{{ $stokUrl }}" role="button"
                   class="w-full flex gap-4 items-center group py-2 mb-3">
                   <svg viewBox="0 0 24 24" width="24" height="24" stroke="white" stroke-width="2"
                      fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
@@ -184,7 +219,8 @@
                   </svg>
                   <p class="text-white text-lg group-hover:text-blue-gray-200">Stok Material Return</p>
                </div>
-               <div id="rekap" data-url="{{ route('admin.laporan.pengembalian-material') }}" role="button"
+               @php $rekapUrl = Auth::user()->role === 'admin' ? route('admin.laporan.pengembalian-material') : (Auth::user()->role === 'manager' ? route('manager.rekap-pengembalian') : null) @endphp
+               <div id="rekap" data-url="{{ $rekapUrl }}" role="button"
                   class="w-full flex gap-4 items-center group py-2 mb-3">
                   <svg viewBox="0 0 24 24" width="24" height="24" stroke="white" stroke-width="2"
                      fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
@@ -213,15 +249,37 @@
       </div>
 
       <!-- Page Content -->
-      <main class="px-2 pt-20 md:px-4 md:pt-28 lg:ml-72">
+      <main class="px-2 pt-20 pb-10 md:px-4 md:pt-24 md:pb-12 lg:ml-72">
          {{ $slot }}
       </main>
+
+      <!-- Preloader -->
+      <div id="preloader"
+         class="inset-0 bg-white fixed z-[999] flex justify-center items-center transition-opacity duration-500">
+         <div class="loader"></div>
+      </div>
    </div>
    @livewireScripts
    <script>
       let btnToggleSB = document.getElementById('toggleSB');
       let sidebar = document.getElementById('sidebar');
       let overlay = document.getElementById('overlay');
+
+      document.addEventListener("DOMContentLoaded", function() {
+         @if (session('success'))
+            Swal.fire({
+               title: "Berhasil!",
+               icon: "success",
+               draggable: true
+            });
+         @elseif (session('error'))
+            Swal.fire({
+               title: "Gagal!",
+               icon: "error",
+               draggable: true
+            });
+         @endif
+      });
 
       btnToggleSB.addEventListener('click', function() {
          sidebar.classList.remove('-translate-x-72');
@@ -242,11 +300,69 @@
       let links = document.querySelectorAll(
          '#dashboard, #pengembalianMaterial, #rekap, #pengembalianMaterialPetugas, #users, #stokMaterialReturn, #materials'
       );
+
       links.forEach(btn => {
          btn.addEventListener('click', function() {
             let link = this.dataset.url;
             window.location.href = link;
          })
+      });
+
+
+      window.addEventListener("load", function() {
+         let preloader = document.querySelector('#preloader');
+
+         if (preloader) {
+            preloader.classList.add("opacity-0");
+
+            setTimeout(() => {
+               preloader.classList.add("hidden");
+            }, 500);
+         }
+      });
+
+      const showModal = (modal) => {
+         modal.classList.remove('scale-0');
+         modal.classList.add('scale-1');
+
+         const overlay = document.createElement('div');
+         overlay.classList.add('fixed', 'inset-0', 'bg-black', 'opacity-65', 'z-20', 'transition-opacity',
+            'duration-300');
+         overlay.id = 'modalOverlay';
+         document.body.appendChild(overlay);
+
+         overlay.addEventListener('click', () => closeModal(modal));
+      };
+
+      const closeModal = (modal) => {
+         modal.classList.add('scale-0');
+         modal.classList.remove('scale-1');
+
+         const overlay = document.getElementById('modalOverlay');
+         if (overlay) {
+            overlay.classList.remove('opacity-65');
+            overlay.classList.add('opacity-0');
+            setTimeout(() => overlay.remove(), 300);
+         }
+      };
+
+      const toggleModal = (event) => {
+         const targetModalId = event.currentTarget.getAttribute('data-modal-target');
+         const modal = document.getElementById(targetModalId);
+
+         if (!modal) return;
+
+         const isOpen = modal.classList.contains('scale-1');
+
+         if (isOpen) {
+            closeModal(modal);
+         } else {
+            showModal(modal);
+         }
+      };
+
+      document.querySelectorAll('[data-modal-target]').forEach(button => {
+         button.addEventListener('click', toggleModal);
       });
    </script>
 </body>

@@ -33,6 +33,8 @@ class AuthenticatedSessionController extends Controller
             return redirect(route('petugas.dashboard'));
         } else if ($user->role === 'admin') {
             return redirect(route('admin.dashboard'));
+        } else if ($user->role === 'manager') {
+            return redirect(route('manager.dashboard'));
         } else {
             abort(404);
         }

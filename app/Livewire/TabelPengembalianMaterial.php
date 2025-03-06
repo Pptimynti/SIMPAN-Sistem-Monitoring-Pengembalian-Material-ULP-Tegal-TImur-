@@ -6,11 +6,14 @@ use App\Models\Pekerjaan;
 use Carbon\Carbon;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Log;
 
 class TabelPengembalianMaterial extends Component
 {
     use WithPagination;
     public $search = '';
+    public $perPage = 5;
+    public $filterBy = '';
     public $startDate;
     public $endDate;
 
@@ -24,15 +27,11 @@ class TabelPengembalianMaterial extends Component
                 ->orWhere('petugas', 'like', "%{$this->search}%");
         });
 
-        if ($this->startDate) {
-            $query->whereDate('created_at', '>=', Carbon::parse($this->startDate));
+        if ($this->filterBy && $this->startDate && $this->endDate) {
+            $query->whereBetween($this->filterBy, [$this->startDate, $this->endDate]);
         }
 
-        if ($this->endDate) {
-            $query->whereDate('created_at', '<=', Carbon::parse($this->endDate));
-        }
-
-        $pekerjaans = $query->latest()->paginate(5);
+        $pekerjaans = $query->with('materialDikembalikans.material')->latest()->paginate($this->perPage);
 
         return view('livewire.tabel-pengembalian-material', [
             'pekerjaans' => $pekerjaans

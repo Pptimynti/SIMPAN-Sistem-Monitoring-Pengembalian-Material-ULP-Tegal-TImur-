@@ -22,11 +22,18 @@ class DatabaseSeeder extends Seeder
             'role' => 'admin'
         ]);
 
-        // User::factory()->create([
-        //     'name' => 'Test Petugas',
-        //     'email' => 'petugas@example.com',
-        //     'password' => bcrypt('petugas12345'),
-        //     'role' => 'petugas'
-        // ]);
+        User::factory()->create([
+            'name' => 'Test Petugas',
+            'email' => 'petugas@example.com',
+            'password' => bcrypt('petugas12345'),
+            'role' => 'petugas'
+        ]);
+
+        User::factory()->create([
+            'name' => 'Test Manager',
+            'email' => 'manager@example.com',
+            'password' => bcrypt('manager12345'),
+            'role' => 'manager'
+        ]);
     }
 }

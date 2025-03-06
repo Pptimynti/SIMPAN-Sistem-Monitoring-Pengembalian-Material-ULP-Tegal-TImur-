@@ -9,6 +9,7 @@ use App\Models\MaterialDikembalikan;
 use App\Models\Pekerjaan;
 use App\Services\PekerjaanInterface;
 use Database\Seeders\GambarMaterialSeeder;
+use Database\Seeders\MaterialBekasSeeder;
 use Database\Seeders\MaterialDikembalikanSeeder;
 use Database\Seeders\MaterialSeeder;
 use Database\Seeders\PekerjaanSeeder;
@@ -38,7 +39,7 @@ class PekerjaanServiceTest extends TestCase
 
     public function testStorePekerjaan()
     {
-        $this->seed(MaterialSeeder::class);
+        $this->seed([MaterialSeeder::class, MaterialBekasSeeder::class]);
         $material = Material::first();
         $data = [
             'no_agenda' => 'Kereng',
@@ -58,8 +59,9 @@ class PekerjaanServiceTest extends TestCase
             ],
         ];
 
+        self::assertNotNull(MaterialBekas::first());
         self::assertTrue($this->pekerjaanService->tambahPekerjaan($data));
-        self::assertCount(1, MaterialBekas::all());
+        self::assertEquals(20, MaterialBekas::first()->stok_tersedia);
     }
 
     public function testUpdatePekerjaan()
@@ -90,6 +92,13 @@ class PekerjaanServiceTest extends TestCase
                         UploadedFile::fake()->image('newImage.jpg'),
                     ]
                 ],
+                [
+                    'material_id' => $material->id,
+                    'jumlah' => 100,
+                    'gambar' => [
+                        UploadedFile::fake()->image('newImage.jpg'),
+                    ]
+                ],
             ]
         ];
 
@@ -101,7 +110,7 @@ class PekerjaanServiceTest extends TestCase
             Log::debug('Voba gays', ['material' => $material]);
         }
 
-        self::assertEquals(100, MaterialBekas::first()->stok);
+        self::assertEquals(200, MaterialBekas::first()->stok_tersedia);
     }
 
     public function testHapusPekerjaan()

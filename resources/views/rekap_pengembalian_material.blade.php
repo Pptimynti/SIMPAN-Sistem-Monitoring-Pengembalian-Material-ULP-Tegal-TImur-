@@ -44,7 +44,7 @@
                      <td rowspan="{{ count($pekerjaan->materialDikembalikans) }}">{{ $pekerjaan->nama_pelanggan }}</td>
                      <td rowspan="{{ count($pekerjaan->materialDikembalikans) }}">{{ $pekerjaan->mutasi }}</td>
                   @endif
-                  <td>{{ $materialD->nama }}</td>
+                  <td>{{ $materialD->material->nama }}</td>
                   <td><strong>x{{ $materialD->jumlah }}</strong></td>
                   <td class="text-center">
                      @foreach ($materialD->gambarMaterials as $gambar)

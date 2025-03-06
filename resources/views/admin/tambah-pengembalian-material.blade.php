@@ -1,5 +1,5 @@
 <x-app-layout>
-   <form method="POST" action="{{ route('petugas.tambah.pengembalian-material') }}"
+   <form method="POST" action="{{ route('admin.tambah-pengembalian-material') }}"
       class="max-w-sm mx-auto p-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg shadow border border-gray-300 dark:border-gray-700 md:max-w-lg"
       enctype="multipart/form-data">
       @csrf
@@ -93,31 +93,30 @@
             'material-item');
 
          newMaterial.innerHTML = `
-                <div class="col-span-1">
-                    <label class="block mb-2 text-sm font-medium text-gray-900">Material</label>
-                    <select name="material_dikembalikan[${index}][material_id]" required
-                        class="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5">
-                        @foreach ($materials as $material)
-                            <option value="{{ $material->id }}">{{ $material->nama }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-span-1">
-                    <label class="block mb-2 text-sm font-medium text-gray-900">Jumlah</label>
-                    <input type="number" name="material_dikembalikan[${index}][jumlah]" required min="1"
-                        class="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5" />
-                </div>
-                <div class="col-span-2">
-                    <label class="block mb-2 text-sm font-medium text-gray-900">Gambar</label>
-                    <input type="file" name="material_dikembalikan[${index}][gambar][]" multiple
-                        class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50" />
-                </div>
-                <button type="button" class="mt-2 px-3 py-1.5 text-white bg-red-600 hover:bg-red-700 rounded-md text-sm removeMaterial">Hapus</button>
-            `;
+                 <div class="col-span-1">
+                     <label class="block mb-2 text-sm font-medium text-gray-900">Material</label>
+                     <select name="material_dikembalikan[${index}][material_id]" required
+                         class="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5">
+                         @foreach ($materials as $material)
+                             <option value="{{ $material->id }}">{{ $material->nama }}</option>
+                         @endforeach
+                     </select>
+                 </div>
+                 <div class="col-span-1">
+                     <label class="block mb-2 text-sm font-medium text-gray-900">Jumlah</label>
+                     <input type="number" name="material_dikembalikan[${index}][jumlah]" required min="1"
+                         class="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5" />
+                 </div>
+                 <div class="col-span-2">
+                     <label class="block mb-2 text-sm font-medium text-gray-900">Gambar</label>
+                     <input type="file" name="material_dikembalikan[${index}][gambar][]" multiple
+                         class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50" />
+                 </div>
+                 <button type="button" class="mt-2 px-3 py-1.5 text-white bg-red-600 hover:bg-red-700 rounded-md text-sm removeMaterial">Hapus</button>
+             `;
 
          container.appendChild(newMaterial);
 
-         // Tambahkan event listener untuk tombol hapus
          newMaterial.querySelector('.removeMaterial').addEventListener('click', function() {
             newMaterial.remove();
          });

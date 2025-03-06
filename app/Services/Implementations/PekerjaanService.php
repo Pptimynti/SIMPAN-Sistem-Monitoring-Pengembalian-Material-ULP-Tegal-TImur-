@@ -2,12 +2,14 @@
 
 namespace App\Services\Implementations;
 
+use App\Models\ActivityLog;
 use App\Models\GambarMaterial;
 use App\Models\Material;
 use App\Models\MaterialBekas;
 use App\Models\MaterialDikembalikan;
 use App\Models\Pekerjaan;
 use App\Services\PekerjaanInterface;
+use Auth;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -17,20 +19,63 @@ use Log;
 class PekerjaanService implements PekerjaanInterface
 {
 
-    /**
-     * @inheritDoc
-     */
     public function hapusPekerjaan(int $idPekerjaan): bool
     {
-        return Pekerjaan::findOrFail($idPekerjaan)->delete();
+        try {
+            Log::info('Mulai menghapus pekerjaan dengan ID: ' . $idPekerjaan);
+
+            // Ambil dulu total jumlah material dikembalikan sebelum data dihapus
+            $materials = MaterialDikembalikan::where('pekerjaan_id', $idPekerjaan)
+                ->select('material_id', DB::raw('SUM(jumlah) as total_jumlah'))
+                ->groupBy('material_id')
+                ->get();
+
+            Log::info('Material dikembalikan ditemukan: ', $materials->toArray());
+
+            // Hapus data pekerjaan setelah data material disimpan
+            Pekerjaan::findOrFail($idPekerjaan)->delete();
+            Log::info('Pekerjaan dengan ID ' . $idPekerjaan . ' berhasil dihapus');
+
+            // Update stok material bekas
+            foreach ($materials as $material) {
+                $materialBekas = MaterialBekas::where('material_id', $material->material_id)->first();
+                $totalJumlahDikembalikan = MaterialDikembalikan::where('material_id', $material->material_id)->sum('jumlah');
+
+                if ($totalJumlahDikembalikan == 0 && ($materialBekas->stok_manual ?? 0) == 0) {
+                    Log::info('Menghapus material bekas karena semua pekerjaan terhapus dan stok manual kosong', ['material_id' => $material->material_id]);
+                    $materialBekas->delete();
+                    continue;
+                }
+
+                $telahDigunakan = $materialBekas->telah_digunakan ?? 0;
+                $stokManual = $materialBekas->stok_manual ?? 0;
+
+                // Hitung ulang stok tersedia dengan mempertimbangkan material telah digunakan
+                $stokTersedia = max(0, ($totalJumlahDikembalikan - $telahDigunakan) + $stokManual);
+
+                MaterialBekas::updateOrCreate(
+                    ['material_id' => $material->material_id],
+                    ['stok_tersedia' => $stokTersedia]
+                );
+
+                Log::info('Stok material bekas diupdate', [
+                    'material_id' => $material->material_id,
+                    'total_jumlah_dikembalikan' => $totalJumlahDikembalikan,
+                    'telah_digunakan' => $telahDigunakan,
+                    'stok_manual' => $stokManual,
+                    'stok_tersedia' => $stokTersedia
+                ]);
+            }
+            return true;
+        } catch (Exception $e) {
+            Log::warning('Gagal menghapus pekerjaan: ' . $e->getMessage());
+            return false;
+        }
     }
 
-    /**
-     * @inheritDoc
-     */
+
     public function tambahPekerjaan(array $data): bool
     {
-        // Log::info("Tanggal PK: " . $data['tanggal_pk']->toDateTimeString());
         $validator = Validator::make($data, [
             'no_agenda' => 'required',
             'no_pk' => 'required',
@@ -82,12 +127,29 @@ class PekerjaanService implements PekerjaanInterface
                         ]);
                     }
                 }
+            }
 
+            $materials = MaterialDikembalikan::select('material_id', DB::raw('SUM(jumlah) as total_jumlah'))
+                ->groupBy('material_id')
+                ->get();
+
+            foreach ($materials as $material) {
+                $materialBekas = MaterialBekas::where('material_id', $material->material_id)->first();
+                $telahDigunakan = $materialBekas->telah_digunakan ?? 0;
+                $stokManual = $materialBekas->stok_manual ?? 0;
                 MaterialBekas::updateOrCreate(
-                    ['material_id' => $material['material_id']],
-                    ['stok' => \DB::raw('stok + ' . $material['jumlah'])]
+                    ['material_id' => $material->material_id],
+                    ['stok_tersedia' => $material->total_jumlah - $telahDigunakan + $stokManual]
                 );
             }
+
+            $user = Auth::user();
+
+            ActivityLog::create([
+                'user_id' => $user->id,
+                'aktivitas' => 'Tambah Pengembalian',
+                'deskripsi' => "melakukan pengembalian material"
+            ]);
 
             DB::commit();
             return true;
@@ -139,11 +201,17 @@ class PekerjaanService implements PekerjaanInterface
             foreach ($validatedData['material_dikembalikan'] as $material) {
                 if (isset($material['id'])) {
                     $existingMaterial = MaterialDikembalikan::findOrFail($material['id']);
-                    $existingMaterial->update(['material_id' => $material['material_id'], 'jumlah' => $material['jumlah']]);
+                    $existingMaterial->update([
+                        'material_id' => $material['material_id'],
+                        'jumlah' => $material['jumlah']
+                    ]);
                     $materialDikembalikan = $existingMaterial;
                 } else {
-                    $newMaterial = MaterialDikembalikan::create(['pekerjaan_id' => $pekerjaan->id, 'material_id' => $material['material_id'], 'jumlah' => $material['jumlah']]);
-                    MaterialBekas::updateOrCreate(['material_id' => $newMaterial['material_id']], ['stok' => DB::raw('COALESCE(stok, 0) + ' . $newMaterial['jumlah'])]);
+                    $newMaterial = MaterialDikembalikan::create([
+                        'pekerjaan_id' => $pekerjaan->id,
+                        'material_id' => $material['material_id'],
+                        'jumlah' => $material['jumlah']
+                    ]);
                     $materialDikembalikan = $newMaterial;
                 }
 
@@ -161,20 +229,25 @@ class PekerjaanService implements PekerjaanInterface
                         GambarMaterial::create(['material_dikembalikan_id' => $materialDikembalikan->id, 'gambar' => $file]);
                     }
                 }
-
-                $materialBekas = MaterialBekas::where('material_id', $material['material_id'])->first();
-                if ($materialBekas) {
-                    $stok_sekarang = $materialBekas->stok;
-                    $stok_baru = $material['jumlah'];
-                    $selisih = $stok_baru - $stok_sekarang;
-
-                    if ($selisih != 0) {
-                        $materialBekas->update(['stok' => DB::raw('stok + ' . $selisih)]);
-                    }
-                }
             }
 
             MaterialDikembalikan::where('pekerjaan_id', $pekerjaan->id)->whereNotIn('id', $materialIds)->delete();
+
+            $materials = MaterialDikembalikan::select('material_id', DB::raw('SUM(jumlah) as total_jumlah'))
+                ->groupBy('material_id')
+                ->get();
+
+            foreach ($materials as $material) {
+                $materialBekas = MaterialBekas::where('material_id', $material->material_id)->first();
+                $telahDigunakan = $materialBekas->telah_digunakan ?? 0;
+                $stokManual = $materialBekas->stok_manual ?? 0;
+                MaterialBekas::updateOrCreate(
+                    ['material_id' => $material->material_id],
+                    ['stok_tersedia' => $material->total_jumlah - $telahDigunakan + $stokManual]
+                );
+            }
+
+            Log::info('materialBekas', ['materialBekas' => $materials]);
 
             DB::commit();
             return true;

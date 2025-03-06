@@ -1,14 +1,6 @@
 <x-app-layout>
-   @livewire('tabel-pengembalian-material')
+   @livewire('tabel-rekap-pengembalian-material')
 </x-app-layout>
-<x-script>
-   <script>
-      let tambahBtn = document.getElementById('tambahBtn');
-      tambahBtn.addEventListener('click', function() {
-         window.location.href = this.dataset.url;
-      })
-   </script>
-</x-script>
 <x-script>
    <script>
       let imagesLink = document.querySelectorAll('.materialImages');

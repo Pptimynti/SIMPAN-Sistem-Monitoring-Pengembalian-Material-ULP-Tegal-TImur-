@@ -53,8 +53,8 @@ class UserService implements UserInterface
         $validator = Validator::make($data, [
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
-            'password' => 'required|confirmed|',
-            'role' => 'required|in:petugas,admin,manager|string|max:10',
+            'password' => 'nullable|confirmed|',
+            'role' => 'nullable|in:petugas,admin,manager|string|max:10',
 
         ]);
 

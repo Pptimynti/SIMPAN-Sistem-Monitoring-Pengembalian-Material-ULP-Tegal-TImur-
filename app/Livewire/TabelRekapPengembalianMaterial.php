@@ -6,6 +6,7 @@ use App\Exports\RekapPengembalianMaterialExport;
 use App\Models\Pekerjaan;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Maatwebsite\Excel\Facades\Excel;
@@ -14,24 +15,10 @@ class TabelRekapPengembalianMaterial extends Component
 {
     use WithPagination;
     public $search = '';
+    public $filterBy = '';
+    public $perPage = 5;
     public $startDate;
     public $endDate;
-    protected $updatesQueryString = ['search'];
-
-    public function updatingSearch()
-    {
-        $this->resetPage();
-    }
-
-    public function updatingStartDate()
-    {
-        $this->resetPage();
-    }
-
-    public function updatingEndDate()
-    {
-        $this->resetPage();
-    }
 
     public function render()
     {
@@ -42,15 +29,12 @@ class TabelRekapPengembalianMaterial extends Component
                 ->orWhere('petugas', 'like', "%{$this->search}%");
         });
 
-        if ($this->startDate) {
-            $query->whereDate('created_at', '>=', Carbon::parse($this->startDate));
+        if ($this->filterBy && $this->startDate && $this->endDate) {
+            $query->whereDate($this->filterBy, '>=', $this->startDate)
+                ->whereDate($this->filterBy, '<=', $this->endDate);
         }
 
-        if ($this->endDate) {
-            $query->whereDate('created_at', '<=', Carbon::parse($this->endDate));
-        }
-
-        $pekerjaans = $query->latest()->paginate(5);
+        $pekerjaans = $query->latest()->paginate($this->perPage);
 
         return view('livewire.tabel-rekap-pengembalian-material', compact('pekerjaans'));
     }
@@ -73,6 +57,6 @@ class TabelRekapPengembalianMaterial extends Component
 
     public function export()
     {
-        return Excel::download(new RekapPengembalianMaterialExport($this->search), 'rekap_pengembalian_material.xlsx');
+        return Excel::download(new RekapPengembalianMaterialExport($this->search, $this->startDate, $this->endDate, $this->filterBy), 'rekap_pengembalian_material.xlsx');
     }
 }

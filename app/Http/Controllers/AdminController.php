@@ -4,15 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Exports\DetailRekapPengembalianMaterial;
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\ActivityLog;
 use App\Models\Material;
+use App\Models\MaterialBekas;
 use App\Models\Pekerjaan;
 use App\Models\User;
+use App\Services\MaterialBekasInterface;
 use App\Services\MaterialInterface;
 use App\Services\PekerjaanInterface;
 use App\Services\UserInterface;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Log;
 use Maatwebsite\Excel\Facades\Excel;
@@ -23,23 +27,45 @@ class AdminController extends Controller
     private PekerjaanInterface $pekerjaanService;
     private UserInterface $userService;
     private MaterialInterface $materialService;
+    private MaterialBekasInterface $materialBekasService;
 
-    public function __construct(PekerjaanInterface $pekerjaanService, UserInterface $userService, MaterialInterface $materialService)
+    public function __construct(PekerjaanInterface $pekerjaanService, UserInterface $userService, MaterialInterface $materialService, MaterialBekasInterface $materialBekasService)
     {
         $this->pekerjaanService = $pekerjaanService;
         $this->userService = $userService;
         $this->materialService = $materialService;
+        $this->materialBekasService = $materialBekasService;
     }
 
     public function dashboard()
     {
-        return view('admin.dashboard');
+        $activityLogs = ActivityLog::latest()->paginate(5);
+        $adminCount = User::where('role', 'admin')->get()->count();
+        $petugasCount = User::where('role', 'petugas')->get()->count();
+        $managerCount = User::where('role', 'manager')->get()->count();
+        $materialBekas = MaterialBekas::all();
+        return view('admin.dashboard', compact('materialBekas', 'adminCount', 'petugasCount', 'managerCount', 'activityLogs'));
     }
 
     public function pengembalianMaterial()
     {
         $pekerjaans = Pekerjaan::with(['materialDikembalikans.gambarMaterials'])->get();
         return view('admin.pengembalian-material', compact('pekerjaans'));
+    }
+
+    public function halamanTambahPengembalianMaterial()
+    {
+        $materials = Material::all();
+        return view('admin.tambah-pengembalian-material', compact('materials'));
+    }
+
+    public function tambahPengembalianMaterial(Request $request)
+    {
+        if ($this->pekerjaanService->tambahPekerjaan($request->all())) {
+            return redirect(route('admin.pengembalian-material'))->with('success', 'Berhasil!');
+        } else {
+            return redirect()->back()->with('error', 'Gagal!');
+        }
     }
 
     public function editPengembalianMaterial($pekerjaanId)
@@ -57,6 +83,15 @@ class AdminController extends Controller
         } else {
             return redirect()->back()->with('error', 'Gagal mengupdate pengembalian material');
         }
+    }
+
+    public function hapusPengembalianMaterial($pekerjaanId)
+    {
+        if ($this->pekerjaanService->hapusPekerjaan($pekerjaanId)) {
+            return redirect()->back()->with('success', 'Berhasil');
+        }
+
+        return redirect()->back()->with('error', 'Gagal');
     }
 
     public function rekapPengembalianMaterial()
@@ -111,7 +146,7 @@ class AdminController extends Controller
 
         $request->user()->save();
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        return Redirect::route('admin.profile-edit')->with('status', 'profile-updated');
     }
 
     public function profileDestroy(Request $request)
@@ -137,9 +172,16 @@ class AdminController extends Controller
         return view('admin.user');
     }
 
-    public function halamanTambahUser()
+    public function showUser($userId)
     {
-        return view('admin.tambah-user');
+        $user = User::findOrFail($userId);
+        if ($user) {
+            return response()->json($user);
+        }
+
+        return response()->json([
+            'error' => 'Gagal mengambil data user'
+        ]);
     }
 
     public function tambahUser(Request $request)
@@ -157,9 +199,10 @@ class AdminController extends Controller
         return view('admin.edit-user', compact('user'));
     }
 
-    public function updateUser(Request $request, $userId)
+    public function updateUser(Request $request)
     {
-        if ($this->userService->update($userId, $request->all())) {
+        Log::info('rekuest update user: ', $request->all());
+        if ($this->userService->update($request->user_id, $request->all())) {
             return redirect(route('admin.users'))->with('success', 'Berhasil mengupdate user');
         } else {
             return redirect()->back()->with('error', 'Gagal mengupdate user');
@@ -177,17 +220,36 @@ class AdminController extends Controller
 
     public function stokMaterialReturn()
     {
-        return view('admin.stok-material-return');
+        $materials = Material::withTrashed()->get();
+        $materialBekas = MaterialBekas::with('material.materialDikembalikans')->get();
+        return view('admin.stok-material-return', compact('materialBekas', 'materials'));
+    }
+
+    public function materialBekasById($materialId)
+    {
+        $materialBekas = MaterialBekas::with('material')->where('material_id', $materialId)->first();
+
+        if (!$materialBekas) {
+            return response()->json(['error' => 'Data tidak ditemukan'], 404);
+        }
+
+        return response()->json($materialBekas);
+    }
+
+    public function showMaterial($materialId)
+    {
+        $material = Material::findOrFail($materialId);
+
+        if ($material) {
+            return response()->json($material);
+        }
+
+        return response()->json(['error', 'Data Tidak Ditemukan'], 400);
     }
 
     public function daftarMaterial()
     {
         return view('admin.material');
-    }
-
-    public function halamanTambahMaterial()
-    {
-        return view('admin.tambah-material');
     }
 
     public function tambahMaterial(Request $request)
@@ -205,10 +267,10 @@ class AdminController extends Controller
         return view('admin.edit-material', compact('material'));
     }
 
-    public function updateMaterial(Request $request, $idMaterial)
+    public function updateMaterial(Request $request)
     {
-        if ($this->materialService->update($idMaterial, $request->all())) {
-            return redirect(route('admin.material-return'))->with('success', 'Berhasil mengupdate material');
+        if ($this->materialService->update($request->material_id, $request->all())) {
+            return redirect(route('admin.daftar-material'))->with('success', 'Berhasil mengupdate material');
         } else {
             return redirect()->back()->with('error', 'Gagal mengupdate material');
         }
@@ -217,11 +279,34 @@ class AdminController extends Controller
     public function deleteMaterial($idMaterial)
     {
         if ($this->materialService->destroy($idMaterial)) {
-            return redirect(route('admin.material-return'))->with('success', 'Berhasil menghapus material');
+            return redirect(route('admin.daftar-material'))->with('success', 'Berhasil menghapus material');
         } else {
             return redirect()->back()->with('error', 'Gagal menghapus material');
         }
     }
 
+    public function menggunakanMaterialBekas(Request $request)
+    {
+        $materialBekas = MaterialBekas::findOrFail($request->materialBekas_id);
+        if ($materialBekas->stok_tersedia >= $request->jumlah) {
+            if ($this->materialBekasService->menggunakanMaterialBekas($materialBekas->id, $request->jumlah)) {
+                return redirect()->back()->with('success', 'Berhasil');
+            } else {
+                return redirect()->back()->with('error', 'Gagal!');
+            }
+        } else {
+            return redirect()->back()->with('error', 'Gagal! Material tidak mencukupi dengan jumlah yang ingin kamu pakai');
+        }
+    }
 
+    public function menyesuaikanStokManual(Request $request)
+    {
+        Log::info('Rekuest penyesuaian material : ', $request->all());
+        $materialId = $request->material_id;
+        if ($this->materialBekasService->menyesuaikanStokManual($materialId, $request->jumlah)) {
+            return redirect()->back()->with('success', 'Berhasil');
+        } else {
+            return redirect()->back()->with('error', 'Gagal!');
+        }
+    }
 }
