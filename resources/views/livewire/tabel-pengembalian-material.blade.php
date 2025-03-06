@@ -1,7 +1,7 @@
 <div>
    <div class="flex flex-col gap-4 md:flex-row">
       <!-- Tombol Tambah dan Filter Halaman Sejajar -->
-      @if (Auth::user()->role === 'admin')
+      @if (Auth::user()->role === 'admin' && Auth::user()->role === 'petugas')
          @php $url = Auth::user()->role === 'admin' ? route('admin.halaman-tambah-pengembalian-material') : route('petugas.halaman.tambah.pengembalian-material') @endphp
          <button id="tambahBtn" data-url="{{ $url }}"
             class="flex items-center w-full sm:w-auto gap-2 px-3 py-2.5 text-sm font-medium text-center text-white bg-[#136782] rounded-lg hover:bg-[#155a71] focus:ring-4 focus:outline-none focus:ring-blue-300">
