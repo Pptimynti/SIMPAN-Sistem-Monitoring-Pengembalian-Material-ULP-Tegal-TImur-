@@ -7,6 +7,7 @@ use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\ActivityLog;
 use App\Models\Material;
 use App\Models\MaterialBekas;
+use App\Models\MaterialDikembalikan;
 use App\Models\Pekerjaan;
 use App\Models\User;
 use App\Services\MaterialBekasInterface;
@@ -39,13 +40,45 @@ class AdminController extends Controller
 
     public function dashboard()
     {
-        $activityLogs = ActivityLog::latest()->paginate(5);
+        $activityLogs = ActivityLog::with(['pekerjaan.materialDikembalikans.material', 'materialBekas'])->latest()->paginate(5);
+        $totalMaterial = Material::all()->count();
         $adminCount = User::where('role', 'admin')->get()->count();
         $petugasCount = User::where('role', 'petugas')->get()->count();
         $managerCount = User::where('role', 'manager')->get()->count();
         $materialBekas = MaterialBekas::all();
-        return view('admin.dashboard', compact('materialBekas', 'adminCount', 'petugasCount', 'managerCount', 'activityLogs'));
+        return view('admin.dashboard', compact('materialBekas', 'adminCount', 'petugasCount', 'managerCount', 'activityLogs', 'totalMaterial'));
     }
+
+    public function activities()
+    {
+        $activityLogs = ActivityLog::with(['pekerjaan.materialDikembalikans.material', 'materialBekas'])->latest()->paginate(5);
+        return view('admin.aktivitas', compact('activityLogs'));
+    }
+
+    public function getStatistik(Request $request)
+    {
+        $bulan = $request->bulan;
+
+        $materials = MaterialDikembalikan::selectRaw('material_id, SUM(jumlah) as total_jumlah')
+            ->when($bulan, function ($query) use ($bulan) {
+                $query->whereMonth('created_at', $bulan);
+            })
+            ->groupBy('material_id')
+            ->with('material')
+            ->get();
+
+        $labels = $materials->pluck('material.nama');
+        $jumlah = $materials->pluck('total_jumlah');
+        $satuan = $materials->pluck('material.satuan');
+
+        return response()->json([
+            'labels' => $labels,
+            'jumlah' => $jumlah,
+            'satuan' => $satuan,
+        ]);
+    }
+
+
 
     public function pengembalianMaterial()
     {

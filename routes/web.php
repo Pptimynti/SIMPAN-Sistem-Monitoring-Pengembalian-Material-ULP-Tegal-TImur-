@@ -49,6 +49,9 @@ Route::controller(AdminController::class)->middleware(AdminMiddleware::class)->p
     Route::put('/daftar-material/update', 'updateMaterial')->name('admin.update-material');
     Route::delete('/daftar-material/{idMaterial}/delete', 'deleteMaterial')->name('admin.delete-material');
     Route::get('/daftar-material/{materialId}/show', 'showMaterial')->name('admin.material.show');
+
+    Route::get('/semua-aktivitas', 'activities')->name('admin.semua-aktivitas');
+    Route::get('/statistik-material', 'getStatistik')->name('admin.statistik');
 });
 
 Route::controller(PetugasController::class)->middleware(PetugasMiddleware::class)->prefix('/petugas')->group(function () {
@@ -56,12 +59,23 @@ Route::controller(PetugasController::class)->middleware(PetugasMiddleware::class
     Route::get('/pengembalian-material', 'pengembalianMaterial')->name('petugas.pengembalian-material');
     Route::get('/pengembalian-material/tambah', 'halamanTambahPengembalianMaterial')->name('petugas.halaman.tambah.pengembalian-material');
     Route::post('/pengembalian-material/tambah', 'tambahPengembalianMaterial')->name('petugas.tambah.pengembalian-material');
+
+    Route::get('/profile', 'profileEdit')->name('petugas.profile-edit');
+    Route::patch('/profile', 'profileUpdate')->name('petugas.profile-update');
+    Route::delete('/profile', 'profileDestroy')->name('petugas.profile-destroy');
 });
 
 Route::controller(ManagerController::class)->middleware(ManagerMiddleware::class)->prefix('/manager')->group(function () {
     Route::get('/dashboard', 'dashboard')->name('manager.dashboard');
     Route::get('/stok-material-return', 'stokMaterialReturn')->name('manager.stok-material-return');
     Route::get('/rekap-pengembalian-material', 'rekapDataPengembalianMaterial')->name('manager.rekap-pengembalian');
+
+    Route::get('/semua-aktivitas', 'activities')->name('manager.semua-aktivitas');
+    Route::get('/statistik-material', 'getStatistik')->name('manager.statistik');
+
+    Route::get('/profile', 'profileEdit')->name('manager.profile-edit');
+    Route::patch('/profile', 'profileUpdate')->name('manager.profile-update');
+    Route::delete('/profile', 'profileDestroy')->name('manager.profile-destroy');
 });
 
 Route::prefix('/admin/api')->controller(AdminController::class)->group(function () {

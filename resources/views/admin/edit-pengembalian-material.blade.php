@@ -6,23 +6,18 @@
       @method('PUT')
       <h1 class="font-bold mb-4 text-lg max-w-60">Tambah Data Pengembalian Material</h1>
 
+      <input type="hidden" name="user_id" value="{{ $pekerjaan->user_id }}">
+
       <div class="mb-3">
          <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Nomor Agenda</label>
          <input type="text" name="no_agenda" required value="{{ $pekerjaan->no_agenda }}"
             class="shadow-xs bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500" />
       </div>
 
-      <div class="mb-3 grid grid-cols-2 gap-3">
-         <div>
-            <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Nomor PK</label>
-            <input type="text" name="no_pk" required value="{{ $pekerjaan->no_pk }}"
-               class="shadow-xs bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500" />
-         </div>
-         <div>
-            <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Tanggal PK</label>
-            <input type="date" name="tanggal_pk" required value="{{ $pekerjaan->tanggal_pk }}"
-               class="shadow-xs bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500" />
-         </div>
+      <div class="mb-3">
+         <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Tanggal PK</label>
+         <input type="date" name="tanggal_pk" required value="{{ $pekerjaan->tanggal_pk }}"
+            class="shadow-xs bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500" />
       </div>
 
       <div class="mb-2">
@@ -58,7 +53,7 @@
                   <div class="col-span-1">
                      <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Material</label>
                      <select name="material_dikembalikan[{{ $index }}][material_id]" required
-                        class="shadow-xs bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500">
+                        class="tom-select">
                         @foreach ($materials as $mat)
                            <option value="{{ $mat->id }}"
                               {{ $mat->id == $material->material_id ? 'selected' : '' }}>
@@ -105,30 +100,34 @@
             'material-item');
 
          newMaterial.innerHTML = `
-            <input type="hidden" name="material_dikembalikan[${index}][id]" value="">
-            <div class="col-span-1">
-                     <label class="block mb-2 text-sm font-medium text-gray-900">Material</label>
-                     <select name="material_dikembalikan[${index}][material_id]" required
-                         class="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5">
-                         @foreach ($materials as $material)
-                             <option value="{{ $material->id }}">{{ $material->nama }}</option>
-                         @endforeach
-                     </select>
-                 </div>
-            <div class="col-span-1">
-                <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Jumlah</label>
-                <input type="number" name="material_dikembalikan[${index}][jumlah]" required min="1"
-                    class="shadow-xs bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500" />
-            </div>
-            <div class="col-span-2">
-                <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Gambar</label>
-                <input type="file" name="material_dikembalikan[${index}][gambar][]" multiple
-                    class="block w-full text-sm text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 focus:ring-blue-500 focus:border-blue-500" />
-            </div>
-            <button type="button" class="px-3 py-1.5 text-white bg-red-600 hover:bg-red-700 rounded-md text-sm removeMaterial">Hapus</button>
-        `;
+                <div class="col-span-1">
+                    <label class="block mb-2 text-sm font-medium text-gray-900">Material</label>
+                    <select name="material_dikembalikan[${index}][material_id]" required
+                        class="tom-select">
+                        <option value="" selected disabled>Pilih material...</option>
+                        @foreach ($materials as $material)
+                            <option value="{{ $material->id }}">{{ $material->nama }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-span-1">
+                    <label class="block mb-2 text-sm font-medium text-gray-900">Jumlah</label>
+                    <input type="number" name="material_dikembalikan[${index}][jumlah]" required min="1"
+                        class="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5" />
+                </div>
+                <div class="col-span-2">
+                    <label class="block mb-2 text-sm font-medium text-gray-900">Gambar</label>
+                    <input type="file" name="material_dikembalikan[${index}][gambar][]" multiple
+                        class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50" />
+                </div>
+                <button type="button" class="mt-2 px-3 py-1.5 text-white bg-red-600 hover:bg-red-700 rounded-md text-sm removeMaterial">Hapus</button>
+            `;
 
          container.appendChild(newMaterial);
+
+         new TomSelect(newMaterial.querySelector('.tom-select'), {
+            maxItems: 1,
+         });
 
          newMaterial.querySelector('.removeMaterial').addEventListener('click', function() {
             newMaterial.remove();

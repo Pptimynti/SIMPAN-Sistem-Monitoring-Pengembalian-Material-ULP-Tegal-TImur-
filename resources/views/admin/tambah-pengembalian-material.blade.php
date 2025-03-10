@@ -5,6 +5,8 @@
       @csrf
       <h1 class="font-bold mb-4 text-lg max-w-60">Tambah Data Pengembalian Material</h1>
 
+      <input type="hidden" name="user_id" value="{{ Auth::user()->id }}">
+
       <div class="mb-3">
          <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Nomor Agenda</label>
          <input type="text" name="no_agenda" required
@@ -12,18 +14,9 @@
       </div>
 
       <div class="mb-3">
-         <div class="grid grid-cols-2 gap-3">
-            <div>
-               <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">No PK</label>
-               <input type="text" name="no_pk" required
-                  class="shadow-xs bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500" />
-            </div>
-            <div>
-               <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Tanggal PK</label>
-               <input type="date" name="tanggal_pk" required
-                  class="shadow-xs bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500" />
-            </div>
-         </div>
+         <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Tanggal PK</label>
+         <input type="date" name="tanggal_pk" required
+            class="shadow-xs bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500" />
       </div>
 
       <div class="mb-3">
@@ -42,17 +35,19 @@
          <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Mutasi</label>
          <select name="mutasi" required
             class="shadow-xs bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500">
-            <option value="Pemasangan Baru">Pemasangan Baru</option>
-            <option value="Pencabutan">Pencabutan</option>
+            <option value="Pasang Baru">Pasang Baru</option>
+            <option value="Perubahan Daya">Perubahan Daya</option>
+            <option value="Mutasi N">Mutasi N</option>
          </select>
       </div>
 
       <div id="materialContainer">
-         <div class="grid grid-cols-2 gap-3 material-item">
-            <div class="col-span-1">
+         <div class="grid grid-cols-3 gap-3 material-item">
+            <div class="col-span-2">
                <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Material</label>
-               <select name="material_dikembalikan[0][material_id]" required
-                  class="shadow-xs bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500">
+               <select placeholder="Pilih material..." name="material_dikembalikan[0][material_id]" required
+                  class="tom-select dark:placeholder:text-white">
+                  <option value="" selected disabled>Pilih material...</option>
                   @foreach ($materials as $material)
                      <option value="{{ $material->id }}">{{ $material->nama }}</option>
                   @endforeach
@@ -63,7 +58,7 @@
                <input type="number" name="material_dikembalikan[0][jumlah]" required min="1"
                   class="shadow-xs bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500" />
             </div>
-            <div class="col-span-2">
+            <div class="col-span-3">
                <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Gambar</label>
                <input type="file" name="material_dikembalikan[0][gambar][]" multiple
                   class="block w-full text-sm text-gray-900 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 focus:ring-blue-500 focus:border-blue-500" />
@@ -89,33 +84,37 @@
          let index = document.querySelectorAll('.material-item').length;
 
          let newMaterial = document.createElement('div');
-         newMaterial.classList.add('grid', 'grid-cols-2', 'gap-3', 'rounded-md', 'mt-3',
-            'material-item');
+         newMaterial.classList.add('grid', 'grid-cols-2', 'gap-3', 'rounded-md', 'mt-3', 'material-item');
 
          newMaterial.innerHTML = `
-                 <div class="col-span-1">
-                     <label class="block mb-2 text-sm font-medium text-gray-900">Material</label>
-                     <select name="material_dikembalikan[${index}][material_id]" required
-                         class="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5">
-                         @foreach ($materials as $material)
-                             <option value="{{ $material->id }}">{{ $material->nama }}</option>
-                         @endforeach
-                     </select>
-                 </div>
-                 <div class="col-span-1">
-                     <label class="block mb-2 text-sm font-medium text-gray-900">Jumlah</label>
-                     <input type="number" name="material_dikembalikan[${index}][jumlah]" required min="1"
-                         class="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5" />
-                 </div>
-                 <div class="col-span-2">
-                     <label class="block mb-2 text-sm font-medium text-gray-900">Gambar</label>
-                     <input type="file" name="material_dikembalikan[${index}][gambar][]" multiple
-                         class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50" />
-                 </div>
-                 <button type="button" class="mt-2 px-3 py-1.5 text-white bg-red-600 hover:bg-red-700 rounded-md text-sm removeMaterial">Hapus</button>
-             `;
+                <div class="col-span-1">
+                    <label class="block mb-2 text-sm font-medium text-gray-900">Material</label>
+                    <select name="material_dikembalikan[${index}][material_id]" required
+                        class="tom-select">
+                        <option value="" selected disabled>Pilih material...</option>
+                        @foreach ($materials as $material)
+                            <option value="{{ $material->id }}">{{ $material->nama }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-span-1">
+                    <label class="block mb-2 text-sm font-medium text-gray-900">Jumlah</label>
+                    <input type="number" name="material_dikembalikan[${index}][jumlah]" required min="1"
+                        class="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5" />
+                </div>
+                <div class="col-span-2">
+                    <label class="block mb-2 text-sm font-medium text-gray-900">Gambar</label>
+                    <input type="file" name="material_dikembalikan[${index}][gambar][]" multiple
+                        class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50" />
+                </div>
+                <button type="button" class="mt-2 px-3 py-1.5 text-white bg-red-600 hover:bg-red-700 rounded-md text-sm removeMaterial">Hapus</button>
+            `;
 
          container.appendChild(newMaterial);
+
+         new TomSelect(newMaterial.querySelector('.tom-select'), {
+            maxItems: 1,
+         });
 
          newMaterial.querySelector('.removeMaterial').addEventListener('click', function() {
             newMaterial.remove();

@@ -12,7 +12,6 @@ return new class extends Migration {
     {
         Schema::create('pekerjaans', function (Blueprint $table) {
             $table->id();
-            $table->string('no_pk');
             $table->date('tanggal_pk');
             $table->string('no_agenda');
             $table->string('petugas');

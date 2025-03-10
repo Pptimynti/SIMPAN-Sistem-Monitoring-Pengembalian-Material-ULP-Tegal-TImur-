@@ -2,9 +2,11 @@
 
 namespace App\Services\Implementations;
 
+use App\Models\ActivityLog;
 use App\Models\Material;
 use App\Services\MaterialInterface;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 use Log;
 use Validator;
 
@@ -25,10 +27,33 @@ class MaterialService implements MaterialInterface
         $validatedData = $validator->validate();
 
         try {
+            $materialBefore = Material::findOrFail($materialId);
             $material = Material::findOrFail($materialId);
             $material->update([
                 'nama' => $validatedData['nama'],
                 'satuan' => $validatedData['satuan']
+            ]);
+
+            $changes = [];
+            if ($materialBefore->nama !== $material->nama) {
+                $changes[] = "nama dari '{$materialBefore->nama}' menjadi '{$material->nama}'";
+            }
+            if ($materialBefore->satuan !== $material->satuan) {
+                $changes[] = "satuan dari '{$materialBefore->satuan}' menjadi '{$material->satuan}'";
+            }
+
+            $deskripsi = "melakukan update data material";
+            if (!empty($changes)) {
+                $deskripsi .= ": " . implode(', ', $changes);
+            }
+
+
+            $user = Auth::user();
+
+            ActivityLog::create([
+                'user_id' => $user->id,
+                'aktivitas' => 'Update Data Material',
+                'deskripsi' => $deskripsi,
             ]);
             return true;
         } catch (Exception $e) {
@@ -51,9 +76,17 @@ class MaterialService implements MaterialInterface
         $validatedData = $validator->validate();
 
         try {
-            Material::create([
+            $material = Material::create([
                 'nama' => $validatedData['nama'],
                 'satuan' => $validatedData['satuan']
+            ]);
+
+            $user = Auth::user();
+
+            ActivityLog::create([
+                'user_id' => $user->id,
+                'aktivitas' => 'Tambah Material Baru',
+                'deskripsi' => "melakukan penambahan data material: $material->nama",
             ]);
             return true;
         } catch (Exception $e) {
@@ -64,6 +97,15 @@ class MaterialService implements MaterialInterface
 
     public function destroy(int $materialId): bool
     {
+        $material = Material::findOrFail($materialId);
+        $user = Auth::user();
+
+        ActivityLog::create([
+            'user_id' => $user->id,
+            'aktivitas' => 'Menghapus Material Baru',
+            'deskripsi' => "melakukan penghapusan data material: $material->nama",
+        ]);
+
         return Material::findOrFail($materialId)->delete();
     }
 }

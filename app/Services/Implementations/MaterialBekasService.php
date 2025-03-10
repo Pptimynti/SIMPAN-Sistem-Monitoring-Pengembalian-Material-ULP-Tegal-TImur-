@@ -2,10 +2,12 @@
 
 namespace App\Services\Implementations;
 
+use App\Models\ActivityLog;
 use App\Models\MaterialBekas;
 use App\Models\MaterialDikembalikan;
 use App\Services\MaterialBekasInterface;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -23,10 +25,21 @@ class MaterialBekasService implements MaterialBekasInterface
 
             $stok_tersedia = $total_jumlah_dikembalikan - $stok_digunakan + $materialBekas->stok_manual;
 
+            $user = Auth::user();
+
+            ActivityLog::create([
+                'user_id' => $user->id,
+                'aktivitas' => 'Menggunakan Material Return',
+                'deskripsi' => "menggunakan material bekas {$materialBekas->material->nama} dengan jumlah {$jumlah}",
+                'material_bekas_id' => $materialBekas->id,
+                'jumlah' => $jumlah
+            ]);
+
             return $materialBekas->update([
                 'telah_digunakan' => $stok_digunakan,
                 'stok_tersedia' => $stok_tersedia,
             ]);
+
         } catch (Exception $e) {
             \Log::error('Gagal menggunakan material:', ['error' => $e->getMessage()]);
             return false;
@@ -36,8 +49,6 @@ class MaterialBekasService implements MaterialBekasInterface
     public function menyesuaikanStokManual(int $materialId, int $jumlah): bool
     {
         try {
-            \Log::info('Mulai menyesuaikan stok manual', ['material_id' => $materialId, 'jumlah' => $jumlah]);
-
             $stok_manual = $jumlah;
 
             $materialBekas = MaterialBekas::updateOrCreate(
@@ -49,25 +60,22 @@ class MaterialBekasService implements MaterialBekasInterface
                 ]
             );
 
-            \Log::info('Material bekas ditemukan atau diperbarui', $materialBekas->toArray());
-
             $total_jumlah_dikembalikan = MaterialDikembalikan::where('material_id', $materialBekas->material_id)->sum('jumlah');
-
-            \Log::info('Total jumlah dikembalikan', ['total_jumlah_dikembalikan' => $total_jumlah_dikembalikan]);
-
             $stok_tersedia = $total_jumlah_dikembalikan - $materialBekas->telah_digunakan + $materialBekas->stok_manual;
 
-            \Log::info('Stok tersedia dihitung', [
-                'stok_manual' => $materialBekas->stok_manual,
-                'telah_digunakan' => $materialBekas->telah_digunakan,
-                'stok_tersedia' => $stok_tersedia
+            $user = Auth::user();
+
+            ActivityLog::create([
+                'user_id' => $user->id,
+                'aktivitas' => 'Menggunakan Material Return',
+                'deskripsi' => "menyesuaikan stok material bekas {$materialBekas->material->nama}",
+                'material' => $materialBekas->material->nama,
+                'jumlah' => $jumlah
             ]);
 
             $updateResult = $materialBekas->update([
                 'stok_tersedia' => $stok_tersedia
             ]);
-
-            \Log::info('Stok material bekas diupdate', ['update_result' => $updateResult]);
 
             return $updateResult;
         } catch (Exception $e) {

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Pekerjaan extends Model
 {
-    protected $fillable = ['no_agenda', 'petugas', 'nama_pelanggan', 'mutasi', 'no_pk', 'tanggal_pk'];
+    protected $fillable = ['no_agenda', 'petugas', 'nama_pelanggan', 'mutasi', 'tanggal_pk', 'user_id'];
 
     public function materialDikembalikans(): HasMany
     {

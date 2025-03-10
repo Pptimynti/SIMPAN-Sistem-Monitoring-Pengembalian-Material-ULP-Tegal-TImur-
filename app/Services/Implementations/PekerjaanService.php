@@ -78,11 +78,11 @@ class PekerjaanService implements PekerjaanInterface
     {
         $validator = Validator::make($data, [
             'no_agenda' => 'required',
-            'no_pk' => 'required',
             'tanggal_pk' => 'required|date',
             'petugas' => 'required',
             'nama_pelanggan' => 'required|max:30',
             'mutasi' => 'required',
+            'user_id' => 'required|exists:users,id',
 
             'material_dikembalikan' => 'required|array',
             'material_dikembalikan.*.material_id' => 'required|exists:materials,id',
@@ -103,11 +103,11 @@ class PekerjaanService implements PekerjaanInterface
             DB::beginTransaction();
             $pekerjaan = Pekerjaan::create([
                 'no_agenda' => $validatedData['no_agenda'],
-                'no_pk' => $validatedData['no_pk'],
                 'tanggal_pk' => $validatedData['tanggal_pk'],
                 'petugas' => $validatedData['petugas'],
                 'nama_pelanggan' => $validatedData['nama_pelanggan'],
-                'mutasi' => $validatedData['mutasi']
+                'mutasi' => $validatedData['mutasi'],
+                'user_id' => $validatedData['user_id']
             ]);
 
             foreach ($validatedData['material_dikembalikan'] as $material) {
@@ -148,7 +148,8 @@ class PekerjaanService implements PekerjaanInterface
             ActivityLog::create([
                 'user_id' => $user->id,
                 'aktivitas' => 'Tambah Pengembalian',
-                'deskripsi' => "melakukan pengembalian material"
+                'deskripsi' => "melakukan pengembalian material",
+                'pekerjaan_id' => $pekerjaan->id
             ]);
 
             DB::commit();
@@ -169,15 +170,17 @@ class PekerjaanService implements PekerjaanInterface
 
         $validator = Validator::make($data, [
             'no_agenda' => 'required',
-            'no_pk' => 'required',
             'tanggal_pk' => 'required|date',
             'petugas' => 'required',
             'nama_pelanggan' => 'required|max:30',
             'mutasi' => 'required',
+            'user_id' => 'required|exists:users,id',
+
             'material_dikembalikan' => 'required|array',
             'material_dikembalikan.*.id' => 'nullable|exists:material_dikembalikans,id',
             'material_dikembalikan.*.material_id' => 'required|exists:materials,id',
             'material_dikembalikan.*.jumlah' => 'required|integer|min:1',
+
             'material_dikembalikan.*.gambar' => 'nullable|array',
             'material_dikembalikan.*.gambar.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240'
         ]);
@@ -194,7 +197,7 @@ class PekerjaanService implements PekerjaanInterface
             DB::beginTransaction();
 
             $pekerjaan = Pekerjaan::findOrFail($idPekerjaan);
-            $pekerjaan->update(['no_agenda' => $validatedData['no_agenda'], 'no_pk' => $validatedData['no_pk'], 'tanggal_pk' => $validatedData['tanggal_pk'], 'petugas' => $validatedData['petugas'], 'nama_pelanggan' => $validatedData['nama_pelanggan'], 'mutasi' => $validatedData['mutasi']]);
+            $pekerjaan->update(['no_agenda' => $validatedData['no_agenda'], 'tanggal_pk' => $validatedData['tanggal_pk'], 'petugas' => $validatedData['petugas'], 'nama_pelanggan' => $validatedData['nama_pelanggan'], 'mutasi' => $validatedData['mutasi'], 'user_id' => $validatedData['user_id']]);
 
             $materialIds = [];
 

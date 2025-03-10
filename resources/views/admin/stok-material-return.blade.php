@@ -85,9 +85,8 @@
                   <div class="col-span-2">
                      <label for="material_id"
                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Material</label>
-                     <select name="material_id" id="material_id"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                        required="" onchange="updateStokManual(this.value)">
+                     <select name="material_id" id="material_id" class="tom-select" required=""
+                        onchange="updateStokManual(this.value)">
                         <option disabled selected value="">Pilih material</option>
                         @foreach ($materials as $material)
                            <option value="{{ $material->id }}">{{ $material->nama }}</option>

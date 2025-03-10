@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\Material;
+use App\Models\MaterialDikembalikan;
 use App\Models\Pekerjaan;
 use App\Services\PekerjaanInterface;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Log;
 
 class PetugasController extends Controller
@@ -19,7 +23,9 @@ class PetugasController extends Controller
     }
     public function dashboard()
     {
-        return view('petugas.dashboard');
+        $pengembalianMaterial = Pekerjaan::where('user_id', Auth::user()->id)->latest()->paginate(3);
+        $totalPengembalianMaterialByUser = Pekerjaan::where('user_id', Auth::user()->id)->whereDate('created_at', Carbon::today())->get()->count();
+        return view('petugas.dashboard', compact('pengembalianMaterial', 'totalPengembalianMaterialByUser'));
     }
 
     public function pengembalianMaterial()
@@ -42,5 +48,43 @@ class PetugasController extends Controller
         } else {
             return redirect()->back()->with('error', 'Gagal menambahkan pengembalian material');
         }
+    }
+
+    public function profileEdit(Request $request)
+    {
+        return view('profile.edit', [
+            'user' => $request->user(),
+        ]);
+    }
+
+    public function profileUpdate(ProfileUpdateRequest $request)
+    {
+        $request->user()->fill($request->validated());
+
+        if ($request->user()->isDirty('email')) {
+            $request->user()->email_verified_at = null;
+        }
+
+        $request->user()->save();
+
+        return Redirect::route('petugas.profile-edit')->with('status', 'profile-updated');
+    }
+
+    public function profileDestroy(Request $request)
+    {
+        $request->validateWithBag('userDeletion', [
+            'password' => ['required', 'current_password'],
+        ]);
+
+        $user = $request->user();
+
+        Auth::logout();
+
+        $user->delete();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return Redirect::to(route('login'));
     }
 }

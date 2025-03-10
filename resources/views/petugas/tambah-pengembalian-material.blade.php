@@ -5,6 +5,8 @@
       @csrf
       <h1 class="font-bold mb-4 text-lg max-w-60">Tambah Data Pengembalian Material</h1>
 
+      <input type="hidden" name="user_id" value="{{ Auth::user()->id }}">
+
       <div class="mb-3">
          <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Nomor Agenda</label>
          <input type="text" name="no_agenda" required
@@ -12,17 +14,10 @@
       </div>
 
       <div class="mb-3">
-         <div class="grid grid-cols-2 gap-3">
-            <div>
-               <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">No PK</label>
-               <input type="text" name="no_pk" required
-                  class="shadow-xs bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500" />
-            </div>
-            <div>
-               <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Tanggal PK</label>
-               <input type="date" name="tanggal_pk" required
-                  class="shadow-xs bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500" />
-            </div>
+         <div>
+            <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Tanggal PK</label>
+            <input type="date" name="tanggal_pk" required
+               class="shadow-xs bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500" />
          </div>
       </div>
 
@@ -42,8 +37,9 @@
          <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Mutasi</label>
          <select name="mutasi" required
             class="shadow-xs bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500">
-            <option value="Pemasangan Baru">Pemasangan Baru</option>
-            <option value="Pencabutan">Pencabutan</option>
+            <option value="Pasang Baru">Pasang Baru</option>
+            <option value="Perubahan Daya">Perubahan Daya</option>
+            <option value="Mutasi N">Mutasi N</option>
          </select>
       </div>
 
@@ -51,8 +47,9 @@
          <div class="grid grid-cols-2 gap-3 material-item">
             <div class="col-span-1">
                <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Material</label>
-               <select name="material_dikembalikan[0][material_id]" required
-                  class="shadow-xs bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500">
+               <select placeholder="Pilih material..." name="material_dikembalikan[0][material_id]" required
+                  class="tom-select">
+                  <option value="" selected disabled>Pilih material...</option>
                   @foreach ($materials as $material)
                      <option value="{{ $material->id }}">{{ $material->nama }}</option>
                   @endforeach

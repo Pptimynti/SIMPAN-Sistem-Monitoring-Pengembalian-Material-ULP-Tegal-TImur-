@@ -18,7 +18,9 @@
     },
     "dependencies": {
         "@alpinejs/persist": "^3.14.8",
+        "chart.js": "^4.4.8",
         "flowbite": "^3.1.2",
-        "sweetalert2": "^11.16.0"
+        "sweetalert2": "^11.16.0",
+        "tom-select": "^2.4.3"
     }
 }

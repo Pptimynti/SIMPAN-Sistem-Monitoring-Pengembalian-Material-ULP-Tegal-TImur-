@@ -9,6 +9,7 @@ use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithDrawings;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
 class RekapPengembalianMaterialExport implements FromCollection, WithHeadings, WithMapping, WithStyles, WithDrawings
 {
@@ -46,9 +47,25 @@ class RekapPengembalianMaterialExport implements FromCollection, WithHeadings, W
 
     public function headings(): array
     {
-        return [
+        if ($this->filterBy && $this->startDate && $this->endDate) {
+            $header = [
+                ['Rekap Pengembalian Material Berdasarkan ' . $this->getFilterText() . ' Periode ' . $this->startDate . ' hingga ' . $this->endDate],
+                ['PT PLN (PERSERO) ULP TEGAL TIMUR'],
+                ['Catatan: Data ini adalah rekap pengembalian material berdasarkan ' . $this->getFilterText() . ' periode ' . $this->startDate . ' hingga ' . $this->endDate . '.'],
+            ];
+        } else {
+            $header = [
+                ['Rekap Semua Pengembalian Material'],
+                ['PT PLN (PERSERO) ULP TEGAL TIMUR'],
+                ['Catatan: Data ini adalah rekap pengembalian material secara keseluruhan.'],
+            ];
+        }
+
+        $header[] = [
             'No',
             'No Agenda',
+            'Tanggal PK',
+            'Tanggal',
             'Petugas',
             'Nama Pelanggan',
             'Mutasi',
@@ -56,6 +73,20 @@ class RekapPengembalianMaterialExport implements FromCollection, WithHeadings, W
             'Jumlah',
             'Gambar'
         ];
+
+        return $header;
+    }
+
+    protected function getFilterText()
+    {
+        switch ($this->filterBy) {
+            case 'tanggal_pk':
+                return 'Tanggal PK';
+            case 'created_at':
+                return 'Tanggal Pengembalian';
+            default:
+                return '';
+        }
     }
 
     public function map($pekerjaan): array
@@ -66,7 +97,9 @@ class RekapPengembalianMaterialExport implements FromCollection, WithHeadings, W
         foreach ($pekerjaan->materialDikembalikans as $index => $material) {
             $row = [
                 $index === 0 ? $this->counter : '',
+                $index === 0 ? $pekerjaan->created_at->isoFormat('D MMMM Y') : '',
                 $index === 0 ? $pekerjaan->no_agenda : '',
+                $index === 0 ? $pekerjaan->tanggal_pk : '',
                 $index === 0 ? $pekerjaan->petugas : '',
                 $index === 0 ? $pekerjaan->nama_pelanggan : '',
                 $index === 0 ? $pekerjaan->mutasi : '',
@@ -85,8 +118,18 @@ class RekapPengembalianMaterialExport implements FromCollection, WithHeadings, W
     public function drawings()
     {
         $drawings = [];
-        $row = 2;
 
+        $logo = new Drawing();
+        $logo->setName('Logo');
+        $logo->setDescription('Logo');
+        $logo->setPath(public_path('images/pln.png'));
+        $logo->setHeight(50);
+        $logo->setCoordinates('A1');
+        $logo->setOffsetX(10);
+        $logo->setOffsetY(10);
+        $drawings[] = $logo;
+
+        $row = 5;
         $materials = $this->collection();
 
         foreach ($materials as $pekerjaan) {
@@ -98,7 +141,7 @@ class RekapPengembalianMaterialExport implements FromCollection, WithHeadings, W
                         $drawing->setDescription($material->material->nama);
                         $drawing->setPath(public_path('storage/' . $gambar->gambar));
                         $drawing->setHeight(80);
-                        $drawing->setCoordinates('H' . $row);
+                        $drawing->setCoordinates('J' . $row);
                         $drawing->setOffsetX(35);
                         $drawing->setOffsetY(10);
                         $drawings[] = $drawing;
@@ -113,7 +156,46 @@ class RekapPengembalianMaterialExport implements FromCollection, WithHeadings, W
 
     public function styles(Worksheet $sheet)
     {
-        $sheet->getStyle('A1:H1')->applyFromArray([
+        $sheet->mergeCells('A1:J1');
+        $sheet->getStyle('A1')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 16,
+                'color' => ['rgb' => '000000'],
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+        ]);
+
+        $sheet->mergeCells('A2:J2');
+        $sheet->getStyle('A2')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 16,
+                'color' => ['rgb' => '000000'],
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+        ]);
+
+        $sheet->mergeCells('A3:J3');
+        $sheet->getStyle('A3')->applyFromArray([
+            'font' => [
+                'italic' => true,
+                'size' => 12,
+                'color' => ['rgb' => '000000'],
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_LEFT,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+        ]);
+
+        $sheet->getStyle('A4:J4')->applyFromArray([
             'font' => [
                 'bold' => true,
                 'color' => ['rgb' => 'FFFFFF'],
@@ -130,7 +212,7 @@ class RekapPengembalianMaterialExport implements FromCollection, WithHeadings, W
             ],
         ]);
 
-        $sheet->getStyle('A2:H' . ($sheet->getHighestRow()))->applyFromArray([
+        $sheet->getStyle('A5:J' . ($sheet->getHighestRow()))->applyFromArray([
             'borders' => [
                 'allBorders' => [
                     'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
@@ -139,23 +221,25 @@ class RekapPengembalianMaterialExport implements FromCollection, WithHeadings, W
             ],
         ]);
 
-        for ($row = 2; $row <= $sheet->getHighestRow(); $row++) {
+        for ($row = 5; $row <= $sheet->getHighestRow(); $row++) {
             $sheet->getRowDimension($row)->setRowHeight(80);
         }
 
         $sheet->getColumnDimension('A')->setWidth(10);
         $sheet->getColumnDimension('B')->setWidth(20);
         $sheet->getColumnDimension('C')->setWidth(20);
-        $sheet->getColumnDimension('D')->setWidth(25);
+        $sheet->getColumnDimension('D')->setWidth(20);
         $sheet->getColumnDimension('E')->setWidth(20);
-        $sheet->getColumnDimension('F')->setAutoSize(true);
-        $sheet->getColumnDimension('G')->setWidth(15);
-        $sheet->getColumnDimension('H')->setWidth(20);
+        $sheet->getColumnDimension('F')->setWidth(25);
+        $sheet->getColumnDimension('G')->setWidth(20);
+        $sheet->getColumnDimension('H')->setAutoSize(true);
+        $sheet->getColumnDimension('I')->setWidth(15);
+        $sheet->getColumnDimension('J')->setWidth(20);
 
-        $sheet->getStyle('A1:H' . ($sheet->getHighestRow()))->getAlignment()->setHorizontal('center');
-        $sheet->getStyle('A1:H' . ($sheet->getHighestRow()))->getAlignment()->setVertical('center');
+        $sheet->getStyle('A1:J' . ($sheet->getHighestRow()))->getAlignment()->setHorizontal('center');
+        $sheet->getStyle('A1:J' . ($sheet->getHighestRow()))->getAlignment()->setVertical('center');
 
-        $row = 2;
+        $row = 5;
         $materials = Pekerjaan::with('materialDikembalikans')->get();
 
         foreach ($materials as $pekerjaan) {
@@ -166,6 +250,8 @@ class RekapPengembalianMaterialExport implements FromCollection, WithHeadings, W
                 $sheet->mergeCells("C{$row}:C" . ($row + $materialCount - 1));
                 $sheet->mergeCells("D{$row}:D" . ($row + $materialCount - 1));
                 $sheet->mergeCells("E{$row}:E" . ($row + $materialCount - 1));
+                $sheet->mergeCells("F{$row}:F" . ($row + $materialCount - 1));
+                $sheet->mergeCells("G{$row}:G" . ($row + $materialCount - 1));
             }
             $row += $materialCount;
         }

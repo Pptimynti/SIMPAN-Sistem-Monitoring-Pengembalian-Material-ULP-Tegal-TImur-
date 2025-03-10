@@ -51,7 +51,7 @@
 </head>
 
 <body class="font-inter text-gray-900 antialiased">
-   <div class="min-h-screen pt-6 sm:pt-0 bg-gray-100 dark:bg-gray-900">
+   <div class="min-h-screen sm:pt-0 bg-gray-100 dark:bg-gray-900">
       <div class="w-full bg-white dark:bg-gray-800 shadow-sm overflow-hidden">
          {{ $slot }}
       </div>

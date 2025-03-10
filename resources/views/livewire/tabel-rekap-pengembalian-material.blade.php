@@ -1,57 +1,80 @@
 <div>
-   <div class="flex flex-col gap-4 md:flex-row md:pb-2a">
-      <div class="flex flex-col sm:flex-row sm:items-center gap-2">
-         <div class="w-full sm:w-auto">
-            <select wire:model.live.debounce.100ms="perPage" id="perPage"
-               class="text-sm text-gray-900 border border-gray-300 rounded-lg w-full sm:w-20 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 p-2.5">
-               <option value="5">5</option>
-               <option value="10">10</option>
-               <option value="50">50</option>
-            </select>
-         </div>
-      </div>
+   <!-- Header Section -->
+   <div class="mb-8">
+      <h1 class="text-3xl font-bold text-[#1e243a] dark:text-white">Rekap Data Pengembalian Material</h1>
+      @if ($filterBy && $startDate && $endDate)
+         @php $filteran = $filterBy === 'tanggal_pk' ? 'Tanggal PK' : 'Tanggal Pengembalian' @endphp
+         <p class="text-gray-600 dark:text-gray-400 mt-2">
+            Rekap data pengembalian material berdasarkan Tanggal PK periode
+            {{ \Illuminate\Support\Carbon::parse($startDate)->isoFormat('dddd, D MMMM YYYY') }} -
+            {{ \Illuminate\Support\Carbon::parse($endDate)->isoFormat('dddd, D MMMM YYYY') }}.
+         </p>
+      @else
+         <p class="text-gray-600 dark:text-gray-400 mt-2">Rekap data pengembalian material keseluruhan.
+         </p>
+      @endif
+   </div>
 
-      <!-- Filter Full Width -->
-      <div class="w-full md:w-fit">
-         <select name="filterBy" wire:model.live.debounce.150ms="filterBy"
-            class="inline-flex items-center bg-white border border-gray-300 hover:bg-gray-100 rounded-lg text-sm p-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 w-full md:w-fit">
-            <option value="" selected disabled>Opsi Filter</option>
-            <option value="tanggal_pk">Tanggal PK</option>
-            <option value="created_at">Tanggal Pengembalian Material</option>
+   <!-- Filter and Search Section -->
+   <div class="flex flex-col sm:flex-row gap-4 mb-4">
+      <!-- Per Page Selector -->
+      <div class="w-full sm:w-48">
+         <select wire:model.live.debounce.100ms="perPage" id="perPage"
+            class="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500">
+            <option value="5">5 per halaman</option>
+            <option value="10">10 per halaman</option>
+            <option value="50">50 per halaman</option>
          </select>
       </div>
 
-      <!-- Tanggal Berjejer -->
+      <!-- Filter By -->
+      <div class="w-full sm:w-48">
+         <select name="filterBy" wire:model.live.debounce.150ms="filterBy"
+            class="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500">
+            <option value="" selected disabled>Opsi Filter</option>
+            <option value="tanggal_pk">Tanggal PK</option>
+            <option value="created_at">Tanggal Pengembalian</option>
+         </select>
+      </div>
+
+      <!-- Date Range -->
       <div class="flex flex-col sm:flex-row sm:items-center gap-2">
          <div class="relative w-full sm:w-44">
             <input id="datepicker-range-start" name="start" type="date" wire:model.live.debounce.150ms="startDate"
-               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+               class="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500">
          </div>
-         <span class="text-gray-500">to</span>
+         <span class="text-gray-500 text-sm">to</span>
          <div class="relative w-full sm:w-44">
             <input id="datepicker-range-end" name="end" type="date" wire:model.live.debounce.150ms="endDate"
                min="{{ $startDate }}"
-               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+               class="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500">
          </div>
       </div>
 
       <!-- Search Bar -->
-      <div class="w-full md:w-80">
-         <div class="relative">
-            <input wire:model.live.debounce.100ms="search" type="text" id="table-search"
-               class="block ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 p-2.5"
-               placeholder="Search for items">
+      <div class="w-full sm:w-96 relative">
+         <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor"
+               viewBox="0 0 24 24">
+               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
          </div>
+         <input wire:model.live.debounce.100ms="search" type="text" id="table-search"
+            class="w-full p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500"
+            placeholder="Cari data...">
       </div>
    </div>
+
+   <!-- Table Section -->
    @if ($pekerjaans->count() > 0)
-      <div class="relative rounded-md overflow-x-auto shadow sm:rounded-lg mt-2 border border-gray-200">
-         <table class="w-full text-sm text-gray-500 dark:text-gray-400 dark:border-gray-700">
-            <thead class="text-xs text-white uppercase bg-[#136782] dark:bg-gray-700 dark:text-gray-400">
+      <div class="relative overflow-x-auto rounded-lg shadow-lg border border-gray-300 dark:border-gray-700">
+         <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+            <thead class="text-xs text-white uppercase bg-[#136782] dark:bg-gray-700">
                <tr>
                   <th scope="col" class="px-6 py-3 border">No</th>
+                  <th scope="col" class="px-6 py-3 min-w-32 border">Tanggal</th>
                   <th scope="col" class="px-6 py-3 min-w-32 border">No Agenda</th>
-                  <th scope="col" class="px-6 py-3 min-w-32 border">No PK</th>
                   <th scope="col" class="px-6 py-3 min-w-32 border">Tanggal PK</th>
                   <th scope="col" class="px-6 py-3 min-w-32 border">Petugas</th>
                   <th scope="col" class="px-6 py-3 min-w-32 border">Nama Pelanggan</th>
@@ -83,16 +106,17 @@
                               {{ $loop->parent->iteration }}
                            </th>
                            <td class="px-6 py-5 border" rowspan="{{ count($pekerjaan->materialDikembalikans) }}">
-                              {{ $pekerjaan->no_agenda }}
+                              {{ \Illuminate\Support\Carbon::parse($pekerjaan->created_at)->isoFormat('D MMM Y') }}
                            </td>
                            <td class="px-6 py-5 border" rowspan="{{ count($pekerjaan->materialDikembalikans) }}">
-                              {{ $pekerjaan->no_pk }}
+                              {{ $pekerjaan->no_agenda }}
                            </td>
                            <td class="px-6 py-5 border" rowspan="{{ count($pekerjaan->materialDikembalikans) }}">
                               {{ \Illuminate\Support\Carbon::parse($pekerjaan->tanggal_pk)->isoFormat('D MMM Y') }}
                            </td>
                            <td class="px-6 py-5 border" rowspan="{{ count($pekerjaan->materialDikembalikans) }}">
                               {{ $pekerjaan->petugas }}
+                           </td>
                            <td class="px-6 py-5 border" rowspan="{{ count($pekerjaan->materialDikembalikans) }}">
                               {{ $pekerjaan->nama_pelanggan }}
                            </td>
@@ -128,42 +152,45 @@
                @endforeach
             </tbody>
          </table>
-
-         <!-- Modal Material Image -->
-         <div id="containerModal" class="fixed z-20 inset-x-0 inset-y-0 pointer-events-none">
-            <div id="overlayModal"
-               class="fixed z-20 inset-x-0 inset-y-0 bg-black opacity-0 backdrop-blur-sm transition-opacity duration-300 pointer-events-none">
-            </div>
-            <img id="modalImage" src=""
-               class="p-4 w-[30rem] h-[30rem] relative z-30 left-1/2 -translate-x-1/2 top-1/2 -translate-y-[99rem] transition-all duration-300">
-            </img>
-         </div>
       </div>
+
+      <!-- Download Buttons -->
       @if (Auth::user()->role === 'admin')
-         <div class="mt-4 flex">
+         <div class="mt-4 flex gap-2">
             <button type="button" wire:click="cetak_pdf"
-               class="text-white bg-[#FF0000] hover:bg-[#FF0000]/90 focus:ring-4 focus:outline-none focus:ring-[#3b5998]/50 rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 me-2 mb-2">
-               <svg class="w-4 h-4 me-2" viewBox="0 0 24 24" width="24" height="24" stroke="white"
-                  stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"
-                  class="css-i6dzq1">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                  <polyline points="14 2 14 8 20 8"></polyline>
-                  <line x1="16" y1="13" x2="8" y2="13"></line>
-                  <line x1="16" y1="17" x2="8" y2="17"></line>
-                  <polyline points="10 9 9 9 8 9"></polyline>
+               class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[#FF0000] rounded-lg hover:bg-[#FF0000]/90 focus:ring-4 focus:outline-none focus:ring-red-300">
+               <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                  id="Office-File-Adobe--Streamline-Ultimate" height="24" width="24">
+                  <desc>Office File Adobe Streamline Icon: https://streamlinehq.com</desc>
+                  <path stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round"
+                     d="M22.5 21.75c0 0.3978 -0.158 0.7794 -0.4393 1.0607S21.3978 23.25 21 23.25H3c-0.39782 0 -0.77936 -0.158 -1.06066 -0.4393C1.65804 22.5294 1.5 22.1478 1.5 21.75V2.25002c0 -0.39783 0.15804 -0.77936 0.43934 -1.06066C2.22064 0.908052 2.60218 0.750016 3 0.750016h15c0.1947 -0.000915 0.3877 0.036595 0.5678 0.110382 0.1802 0.073788 0.3441 0.182402 0.4822 0.319622l3 2.88c0.1428 0.13917 0.2562 0.30558 0.3335 0.48937 0.0773 0.1838 0.1169 0.38124 0.1165 0.58063V21.75Z"
+                     stroke-width="1.5"></path>
+                  <path stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round"
+                     d="M6.14994 4.55007c-2.23 1.45 0.72 5.18 4.64996 7.71003 1.24 0.81 7.28 4.81 8.16 2.06 0.74 -2.32 -1.91 -2.86 -7.29 -1.18 -6.72996 2.1 -6.99996 6.27 -4.99996 6.72 2.66 0.61 3.17 -5.36 3.31 -6.52 0.43996 -4.22003 -1.4 -10.34003 -3.83 -8.79003Z"
+                     stroke-width="1.5"></path>
                </svg>
                Download PDF
             </button>
             <button wire:click="export" type="button"
-               class="text-white bg-[#217346] hover:bg-[#217346]/90 focus:ring-4 focus:outline-none focus:ring-[#3b5998]/50 rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 me-2 mb-2">
-               <svg class="w-4 h-4 me-2" viewBox="0 0 24 24" width="24" height="24" stroke="white"
-                  stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"
-                  class="css-i6dzq1">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                  <polyline points="14 2 14 8 20 8"></polyline>
-                  <line x1="16" y1="13" x2="8" y2="13"></line>
-                  <line x1="16" y1="17" x2="8" y2="17"></line>
-                  <polyline points="10 9 9 9 8 9"></polyline>
+               class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[#217346] rounded-lg hover:bg-[#217346]/90 focus:ring-4 focus:outline-none focus:ring-green-300">
+               <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                  id="Microsoft-Excel-Logo--Streamline-Ultimate" height="24" width="24">
+                  <desc>Microsoft Excel Logo Streamline Icon: https://streamlinehq.com</desc>
+                  <path stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" d="M15.12 12h8.13"
+                     stroke-width="1.5"></path>
+                  <path stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" d="M15.12 7h8.13"
+                     stroke-width="1.5"></path>
+                  <path stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" d="m4 9 5 6"
+                     stroke-width="1.5"></path>
+                  <path stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" d="m9 9 -5 6"
+                     stroke-width="1.5"></path>
+                  <path stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" d="M15.13 2.25V17h8.12"
+                     stroke-width="1.5"></path>
+                  <path stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round"
+                     d="M7 18v3c0 0.2652 0.10536 0.5196 0.29289 0.7071C7.48043 21.8946 7.73478 22 8 22h14.25c0.2652 0 0.5196 -0.1054 0.7071 -0.2929s0.2929 -0.4419 0.2929 -0.7071V3c0 -0.26522 -0.1054 -0.51957 -0.2929 -0.70711C22.7696 2.10536 22.5152 2 22.25 2H8c-0.26522 0 -0.51957 0.10536 -0.70711 0.29289C7.10536 2.48043 7 2.73478 7 3v3"
+                     stroke-width="1.5"></path>
+                  <path stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round"
+                     d="M1.75 6h10s1 0 1 1v10s0 1 -1 1h-10s-1 0 -1 -1V7s0 -1 1 -1Z" stroke-width="1.5"></path>
                </svg>
                Download EXCEL
             </button>
@@ -171,9 +198,8 @@
       @endif
    @else
       <div class="flex flex-col items-center justify-center h-[27rem] text-gray-600">
-         <svg class="w-16 h-16 text-gray-400 mb-4" viewBox="0 0 24 24" width="24" height="24"
-            stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"
-            class="css-i6dzq1">
+         <svg class="w-16 h-16 text-gray-400 mb-4" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
+            fill="none" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
          </svg>
@@ -181,4 +207,14 @@
          <p class="text-gray-500 mt-2 text-center">Coba gunakan kata kunci lain atau tambahkan data.</p>
       </div>
    @endif
+
+   <!-- Modal for Image Preview -->
+   <div id="containerModal" class="fixed z-20 inset-x-0 inset-y-0 pointer-events-none">
+      <div id="overlayModal"
+         class="fixed z-20 inset-x-0 inset-y-0 bg-black opacity-0 backdrop-blur-sm transition-opacity duration-300 pointer-events-none">
+      </div>
+      <img id="modalImage" src=""
+         class="p-4 w-[30rem] h-[30rem] relative z-30 left-1/2 -translate-x-1/2 top-1/2 -translate-y-[99rem] transition-all duration-300">
+      </img>
+   </div>
 </div>

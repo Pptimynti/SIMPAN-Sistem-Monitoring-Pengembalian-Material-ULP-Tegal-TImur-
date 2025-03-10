@@ -55,18 +55,100 @@
             transform: rotate(1turn)
          }
       }
+
+      .form-loader {
+         width: 50px;
+         padding: 8px;
+         aspect-ratio: 1;
+         border-radius: 50%;
+         background: #25b09b;
+         --_m:
+            conic-gradient(#0000 10%, #000),
+            linear-gradient(#000 0 0) content-box;
+         -webkit-mask: var(--_m);
+         mask: var(--_m);
+         -webkit-mask-composite: source-out;
+         mask-composite: subtract;
+         animation: l3 1s infinite linear;
+      }
+
+      @keyframes l3 {
+         to {
+            transform: rotate(1turn)
+         }
+      }
+
+      .ts-control {
+         padding: 0.625rem !important;
+         background-color: rgb(249 250 251 / var(--tw-bg-opacity, 1)) !important;
+         border: 1px solid rgb(209 213 219) !important;
+         border-radius: 0.5rem !important;
+         color: rgb(17 24 39) !important;
+         font-size: 0.875rem !important;
+         font-family: 'Poppins', sans-serif !important;
+         font-weight: 500 !important;
+      }
+
+      .dark .ts-control {
+         background-color: rgb(55 65 81) !important;
+         border: 1px solid rgb(75 85 99) !important;
+         color: rgb(255 255 255) !important;
+         font-family: 'Poppins', sans-serif !important;
+         font-weight: 500 !important;
+      }
+
+      .ts-control::placeholder {
+         color: rgb(107 114 128) !important;
+      }
+
+      .dark .ts-control::placeholder {
+         color: rgb(255 255 255) !important;
+      }
+
+      .ts-dropdown {
+         background-color: rgb(249 250 251 / var(--tw-bg-opacity, 1)) !important;
+         border: 1px solid rgb(209 213 219) !important;
+         border-radius: 0.5rem !important;
+         padding: 0.5rem !important;
+         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+      }
+
+      .dark .ts-dropdown {
+         background-color: rgb(55 65 81) !important;
+         border: 1px solid rgb(75 85 99) !important;
+      }
+
+      .ts-dropdown .option {
+         padding: 0.625rem !important;
+         color: rgb(17 24 39) !important;
+         font-size: 0.875rem !important;
+         border-radius: 0.375rem !important;
+         font-family: 'Poppins', sans-serif !important;
+         font-weight: 500 !important;
+      }
+
+      .dark .ts-dropdown .option {
+         background-color: rgb(31 41 55) !important;
+         color: rgb(255 255 255) !important;
+         font-family: 'Poppins', sans-serif !important;
+         font-weight: 500 !important;
+      }
+
+      .dark .ts-dropdown .option:hover {
+         background-color: rgb(75 85 99) !important;
+      }
    </style>
 </head>
 
 <body x-cloak x-data="{ darkMode: localStorage.getItem('darkMode') === 'true' }" x-init="$watch('darkMode', val => localStorage.setItem('darkMode', val))" :class="{ 'dark': darkMode === true }"
    class="antialiased">
-   <div class="min-h-screen bg-white dark:bg-gray-800 dark:text-white">
+   <div class="min-h-screen bg-gray-100 dark:bg-gray-800 dark:text-white">
       {{-- @include('layouts.navigation') --}}
 
       <!-- Heading -->
       <div
-         class="inset-x-0 top-0 fixed bg-[#136782] h-16 flex justify-between p-2 items-center dark:bg-gray-700 md:p-4 md:h-20 z-10">
-         <button id="toggleSB" type="button">
+         class="inset-x-0 top-0 fixed bg-[#136782] h-16 flex justify-between p-4 items-center dark:bg-gray-700 shadow-lg z-10">
+         <button id="toggleSB" type="button" class="p-2 rounded-lg hover:bg-[#0e4d63] transition-colors">
             <svg viewBox="0 0 24 24" width="24" height="24" stroke="white" stroke-width="2" fill="none"
                stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
                <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -74,9 +156,9 @@
                <line x1="3" y1="18" x2="21" y2="18"></line>
             </svg>
          </button>
-         <div class="flex items-center">
+         <div class="flex items-center gap-4">
             <button @click="darkMode=!darkMode" type="button"
-               class="relative inline-flex flex-shrink-0 h-6 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer bg-zinc-200 dark:bg-zinc-700 w-11 focus:outline-none focus:ring-2 focus:ring-neutral-700 focus:ring-offset-2 dark:border-white"
+               class="relative inline-flex flex-shrink-0 h-6 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer bg-zinc-200 dark:bg-zinc-700 w-11 focus:outline-none focus:ring-2 focus:ring-neutral-700 focus:ring-offset-2 dark:border-white hover:bg-zinc-300 dark:hover:bg-zinc-600"
                role="switch" aria-checked="false">
                <span class="sr-only">Use setting</span>
                <span
@@ -108,13 +190,14 @@
                   </span>
                </span>
             </button>
-            <div class="flex items-center ms-3">
+            <div class="flex items-center">
                <div>
                   <button type="button"
-                     class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
+                     class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600 hover:bg-gray-700 transition-colors"
                      aria-expanded="false" data-dropdown-toggle="dropdown-user">
                      <span class="sr-only">Open user menu</span>
-                     <img class="w-8 h-8 rounded-full" src="" alt="user photo">
+                     @php $urlGambar = Auth::user()->role === 'admin' ? asset('storage/images/woman.png') : (Auth::user()->role === 'manager' ? asset('storage/images/profile.png') : asset('storage/images/petugas.png')) @endphp
+                     <img class="w-8 h-8 rounded-full" src="{{ $urlGambar }}" alt="user photo">
                   </button>
                </div>
                <div
@@ -130,8 +213,8 @@
                   </div>
                   <ul class="py-1" role="none">
                      <li>
-                        @php $url = Auth::user()->role === 'admin' ? route('admin.profile-edit') : null @endphp
-                        <button id="profileButton" type="button" data-url="{{ route('admin.profile-edit') }}"
+                        @php $url = Auth::user()->role === 'admin' ? route('admin.profile-edit') : (Auth::user()->role === 'manager' ? route('manager.profile-edit') : route('petugas.profile-edit')) @endphp
+                        <button id="profileButton" type="button" data-url="{{ $url }}"
                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white w-full text-left"
                            role="menuitem">User Profile</button>
                      </li>
@@ -151,11 +234,20 @@
       <!-- Sidebar -->
       <div id="sidebar"
          class="fixed inset-y-0 w-72 bg-[#1e243a] p-4 -translate-x-72 transition-all duration-150 z-20 lg:translate-x-0 dark:bg-gray-600 lg:transition-none lg:duration-0">
-         <div class="w-full flex gap-2">
-            <img src="{{ asset('images/pln.png') }}" alt="" class="w-14 h-14">
+         <div class="w-full flex items-center gap-3">
+            <img src="{{ asset('images/pln.png') }}" alt="Logo PLN" class="w-20 h-20">
+
             <div>
-               <h1 class="text-white font-bold leading-5">MONITORING MATERIAL SISTEM</h1>
-               <p class="text-sm text-white font-light">ULP Tegal Timur</p>
+               <!-- Judul SIMPAN -->
+               <h1 class="text-white font-bold text-xl leading-tight">SIMPAN</h1>
+
+               <h2 class="text-white font-semibold text-sm leading-tight mt-1">
+                  Sistem Monitoring Pengembalian Material
+               </h2>
+
+               <p class="text-white font-light text-xs mt-1">
+                  ULP Tegal Timur
+               </p>
             </div>
          </div>
          <div class="w-full border-[.5px] border-white mt-4"></div>
@@ -253,10 +345,21 @@
          {{ $slot }}
       </main>
 
+      <!-- Footer -->
+      <div class="mt-8 text-center text-sm text-gray-600 ml-72 py-4">
+         <p>© 2025 SIMPAN | PLN ULP Tegal Timur. All rights reserved.</p>
+      </div>
+
       <!-- Preloader -->
       <div id="preloader"
          class="inset-0 bg-white fixed z-[999] flex justify-center items-center transition-opacity duration-500">
          <div class="loader"></div>
+      </div>
+
+      <!-- Form Loader -->
+      <div id="formLoader"
+         class="inset-0 bg-white fixed z-[999] hidden justify-center items-center transition-opacity duration-500">
+         <div class="form-loader"></div>
       </div>
    </div>
    @livewireScripts
@@ -281,6 +384,16 @@
          @endif
       });
 
+      document.getElementById("DOMContentLoaded", function() {
+         let form = document.querySelectorAll('.form-submit');
+         let preloader = document.getElementById('formLoader');
+
+         form.addEventListener('submit', function() {
+            preloader.classList.remove('hidden');
+            preloader.classList.add('flex');
+         });
+      });
+
       btnToggleSB.addEventListener('click', function() {
          sidebar.classList.remove('-translate-x-72');
          sidebar.classList.add('translate-x-0');
@@ -298,7 +411,7 @@
       });
 
       let links = document.querySelectorAll(
-         '#dashboard, #pengembalianMaterial, #rekap, #pengembalianMaterialPetugas, #users, #stokMaterialReturn, #materials'
+         '#dashboard, #pengembalianMaterial, #rekap, #pengembalianMaterialPetugas, #users, #stokMaterialReturn, #materials, #profileButton',
       );
 
       links.forEach(btn => {
