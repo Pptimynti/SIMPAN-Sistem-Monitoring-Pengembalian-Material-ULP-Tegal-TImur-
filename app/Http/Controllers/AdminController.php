@@ -136,8 +136,7 @@ class AdminController extends Controller
     public function rekapDetailPengembalianMaterial($pekerjaanId)
     {
         $pekerjaan = Pekerjaan::with('materialDikembalikans.gambarMaterials')
-            ->findOrFail($pekerjaanId)
-            ->first();
+            ->findOrFail($pekerjaanId);
         if ($pekerjaan) {
             return view('admin.detail-pengembalian-material', compact('pekerjaan'));
         } else {

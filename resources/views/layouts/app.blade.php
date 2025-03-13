@@ -199,7 +199,7 @@
                      @php $urlGambar = Auth::user()->role === 'admin' ? asset('storage/images/woman.png') : (Auth::user()->role === 'manager' ? asset('storage/images/profile.png') : asset('storage/images/petugas.png')) @endphp
                      <img class="w-8 h-8 rounded-full" src="{{ $urlGambar }}" alt="user photo">
                   </button>
-               </div>
+               </div>   
                <div
                   class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-sm shadow-sm dark:bg-gray-700 dark:divide-gray-600"
                   id="dropdown-user">
