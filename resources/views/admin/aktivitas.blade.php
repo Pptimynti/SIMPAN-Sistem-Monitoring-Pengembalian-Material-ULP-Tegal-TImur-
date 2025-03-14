@@ -23,11 +23,6 @@
                <li
                   class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 sm:p-6 bg-gray-50 dark:bg-gray-700 rounded-lg">
                   <div class="mb-2 sm:mb-0">
-                     <!-- Deskripsi Aktivitas -->
-                     <p class="text-sm sm:text-base text-gray-700 dark:text-gray-200 capitalize">
-                        {{ $activity->deskripsi }}
-                     </p>
-
                      <!-- Material -->
                      @if ($activity->pekerjaan_id !== null)
                         <p class="text-sm sm:text-base text-gray-700 dark:text-gray-200 mt-1">
