@@ -17,7 +17,8 @@ class TabelMaterialReturn extends Component
     public function render()
     {
 
-        $activityLogs = ActivityLog::where('aktivitas', 'Menggunakan Material Return')->paginate(5);
+        $activityLogs = ActivityLog::where('aktivitas', 'Menggunakan Material Return')->with('materialBekas.material')->paginate(5);
+        // dd($activityLogs);
         $materialBekas = MaterialBekas::with('material')
             ->whereHas('material', function ($query) {
                 $query->where('nama', 'like', "%{$this->search}%");

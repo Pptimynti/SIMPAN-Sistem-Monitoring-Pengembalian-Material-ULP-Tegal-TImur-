@@ -67,10 +67,8 @@ class MaterialBekasService implements MaterialBekasInterface
 
             ActivityLog::create([
                 'user_id' => $user->id,
-                'aktivitas' => 'Menggunakan Material Return',
-                'deskripsi' => "menyesuaikan stok material bekas {$materialBekas->material->nama}",
-                'material' => $materialBekas->material->nama,
-                'jumlah' => $jumlah
+                'aktivitas' => 'Menyesuaikan Material Return',
+                'deskripsi' => "menyesuaikan stok material bekas {$materialBekas->material->nama} dengan jumlah {$jumlah}",
             ]);
 
             $updateResult = $materialBekas->update([
