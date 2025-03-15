@@ -196,10 +196,10 @@
                      class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600 hover:bg-gray-700 transition-colors"
                      aria-expanded="false" data-dropdown-toggle="dropdown-user">
                      <span class="sr-only">Open user menu</span>
-                     @php $urlGambar = Auth::user()->role === 'admin' ? asset('storage/images/woman.png') : (Auth::user()->role === 'manager' ? asset('storage/images/profile.png') : asset('storage/images/petugas.png')) @endphp
+                     @php $urlGambar = Auth::user()->role === 'admin' ? asset('images/woman.png') : (Auth::user()->role === 'manager' ? asset('images/profile.png') : asset('images/petugas.png')) @endphp
                      <img class="w-8 h-8 rounded-full" src="{{ $urlGambar }}" alt="user photo">
                   </button>
-               </div>   
+               </div>
                <div
                   class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-sm shadow-sm dark:bg-gray-700 dark:divide-gray-600"
                   id="dropdown-user">
