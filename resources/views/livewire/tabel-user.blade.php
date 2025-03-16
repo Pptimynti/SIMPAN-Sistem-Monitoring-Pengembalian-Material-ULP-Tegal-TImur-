@@ -62,11 +62,11 @@
                      </tr>
                   </thead>
                   <tbody>
-                     @php $no = ($materials->currentPage() - 1) * $materials->perPage(); @endphp
+                     @php $no = ($users->currentPage() - 1) * $users->perPage(); @endphp
                      @foreach ($users as $user)
                         <tr
                            class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                           <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">{{ $no }}</td>
+                           <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">{{ $no++ }}</td>
                            <td class="px-6 py-4">{{ $user->name }}</td>
                            <td class="px-6 py-4">{{ $user->email }}</td>
                            <td class="px-6 py-4 capitalize">{{ $user->role }}</td>

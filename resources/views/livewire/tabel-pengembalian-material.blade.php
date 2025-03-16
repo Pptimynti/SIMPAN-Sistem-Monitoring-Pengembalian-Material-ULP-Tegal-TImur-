@@ -100,7 +100,7 @@
                </tr>
             </thead>
             <tbody>
-               @php $no = ($materials->currentPage() - 1) * $materials->perPage(); @endphp
+               @php $no = ($pekerjaans->currentPage() - 1) * $pekerjaans->perPage(); @endphp
                @foreach ($pekerjaans as $pekerjaan)
                   @php $firstRow = true; @endphp
                   @foreach ($pekerjaan->materialDikembalikans as $materialD)
@@ -108,7 +108,7 @@
                         @if ($firstRow)
                            <th scope="row" class="px-6 py-5 font-medium text-gray-900 dark:text-white border"
                               rowspan="{{ count($pekerjaan->materialDikembalikans) }}">
-                              {{ $no }}
+                              {{ $no++ }}
                            </th>
                            <td class="px-6 py-5 border" rowspan="{{ count($pekerjaan->materialDikembalikans) }}">
                               {{ \Illuminate\Support\Carbon::parse($pekerjaan->created_at)->isoFormat('D MMM Y') }}
