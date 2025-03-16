@@ -14,6 +14,14 @@ class TabelMaterialReturn extends Component
     public $perPage = 5;
 
     use WithPagination;
+    public function updatingPerPage()
+    {
+        $this->resetPage();
+    }
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
     public function render()
     {
 

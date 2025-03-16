@@ -4,9 +4,19 @@ namespace App\Livewire;
 
 use App\Models\User;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class TabelUser extends Component
 {
+    use WithPagination;
+    public function updatingPerPage()
+    {
+        $this->resetPage();
+    }
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
     public $search = '';
     public $perPage = 5;
     public function render()

@@ -15,6 +15,10 @@ class TabelMaterial extends Component
     {
         $this->resetPage();
     }
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
     public function render()
     {
         $materials = Material::where('nama', 'like', "%{$this->search}%")->orderBy('nama', 'asc')->paginate($this->perPage);

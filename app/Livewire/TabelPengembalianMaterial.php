@@ -3,14 +3,13 @@
 namespace App\Livewire;
 
 use App\Models\Pekerjaan;
-use Carbon\Carbon;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Log;
 
 class TabelPengembalianMaterial extends Component
 {
     use WithPagination;
+
     public $search = '';
     public $perPage = 5;
     public $filterBy = '';
@@ -18,6 +17,27 @@ class TabelPengembalianMaterial extends Component
     public $endDate;
 
     protected $updatesQueryString = ['search'];
+
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingFilterBy()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingStartDate()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingEndDate()
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
         $query = Pekerjaan::query();
