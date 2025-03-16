@@ -104,10 +104,11 @@
                         </tr>
                      </thead>
                      <tbody>
+                        @php $no = ($materials->currentPage() - 1) * $materials->perPage(); @endphp
                         @foreach ($activityLogs as $activity)
                            <tr
                               class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                              <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">{{ $loop->iteration }}
+                              <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">{{ $no }}
                               </td>
                               <td class="px-6 py-4">
                                  {{ \Illuminate\Support\Carbon::parse($activity->created_at)->isoFormat('D MMM Y') }}
