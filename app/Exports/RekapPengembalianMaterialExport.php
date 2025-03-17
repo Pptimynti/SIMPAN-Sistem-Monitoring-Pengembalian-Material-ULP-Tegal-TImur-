@@ -140,10 +140,10 @@ class RekapPengembalianMaterialExport implements FromCollection, WithHeadings, W
                         $drawing->setName($material->material->nama);
                         $drawing->setDescription($material->material->nama);
                         $drawing->setPath(public_path('storage/' . $gambar->gambar));
-                        $drawing->setHeight(80);
+                        $drawing->setHeight(150);
                         $drawing->setCoordinates('J' . $row);
-                        $drawing->setOffsetX(35);
-                        $drawing->setOffsetY(10);
+                        $drawing->setOffsetX(0);
+                        $drawing->setOffsetY(0);
                         $drawings[] = $drawing;
                     }
                 }
@@ -219,10 +219,14 @@ class RekapPengembalianMaterialExport implements FromCollection, WithHeadings, W
                     'color' => ['rgb' => '000000'],
                 ],
             ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
         ]);
 
         for ($row = 5; $row <= $sheet->getHighestRow(); $row++) {
-            $sheet->getRowDimension($row)->setRowHeight(80);
+            $sheet->getRowDimension($row)->setRowHeight(150);
         }
 
         $sheet->getColumnDimension('A')->setWidth(10);
@@ -232,9 +236,9 @@ class RekapPengembalianMaterialExport implements FromCollection, WithHeadings, W
         $sheet->getColumnDimension('E')->setWidth(20);
         $sheet->getColumnDimension('F')->setWidth(25);
         $sheet->getColumnDimension('G')->setWidth(20);
-        $sheet->getColumnDimension('H')->setAutoSize(true);
+        $sheet->getColumnDimension('H')->setWidth(40);
         $sheet->getColumnDimension('I')->setWidth(15);
-        $sheet->getColumnDimension('J')->setWidth(20);
+        $sheet->getColumnDimension('J')->setWidth(40);
 
         $sheet->getStyle('A1:J' . ($sheet->getHighestRow()))->getAlignment()->setHorizontal('center');
         $sheet->getStyle('A1:J' . ($sheet->getHighestRow()))->getAlignment()->setVertical('center');

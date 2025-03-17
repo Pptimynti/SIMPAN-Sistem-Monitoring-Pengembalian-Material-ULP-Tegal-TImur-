@@ -158,20 +158,6 @@
       <!-- Download Buttons -->
       @if (Auth::user()->role === 'admin')
          <div class="mt-4 flex gap-2">
-            <button type="button" wire:click="cetak_pdf"
-               class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[#FF0000] rounded-lg hover:bg-[#FF0000]/90 focus:ring-4 focus:outline-none focus:ring-red-300">
-               <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                  id="Office-File-Adobe--Streamline-Ultimate" height="24" width="24">
-                  <desc>Office File Adobe Streamline Icon: https://streamlinehq.com</desc>
-                  <path stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round"
-                     d="M22.5 21.75c0 0.3978 -0.158 0.7794 -0.4393 1.0607S21.3978 23.25 21 23.25H3c-0.39782 0 -0.77936 -0.158 -1.06066 -0.4393C1.65804 22.5294 1.5 22.1478 1.5 21.75V2.25002c0 -0.39783 0.15804 -0.77936 0.43934 -1.06066C2.22064 0.908052 2.60218 0.750016 3 0.750016h15c0.1947 -0.000915 0.3877 0.036595 0.5678 0.110382 0.1802 0.073788 0.3441 0.182402 0.4822 0.319622l3 2.88c0.1428 0.13917 0.2562 0.30558 0.3335 0.48937 0.0773 0.1838 0.1169 0.38124 0.1165 0.58063V21.75Z"
-                     stroke-width="1.5"></path>
-                  <path stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round"
-                     d="M6.14994 4.55007c-2.23 1.45 0.72 5.18 4.64996 7.71003 1.24 0.81 7.28 4.81 8.16 2.06 0.74 -2.32 -1.91 -2.86 -7.29 -1.18 -6.72996 2.1 -6.99996 6.27 -4.99996 6.72 2.66 0.61 3.17 -5.36 3.31 -6.52 0.43996 -4.22003 -1.4 -10.34003 -3.83 -8.79003Z"
-                     stroke-width="1.5"></path>
-               </svg>
-               Download PDF
-            </button>
             <button wire:click="export" type="button"
                class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[#217346] rounded-lg hover:bg-[#217346]/90 focus:ring-4 focus:outline-none focus:ring-green-300">
                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"

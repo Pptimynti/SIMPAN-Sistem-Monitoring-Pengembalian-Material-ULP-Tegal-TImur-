@@ -150,17 +150,6 @@ class AdminController extends Controller
         return Excel::download(new DetailRekapPengembalianMaterial($pekerjaanId), "detail-{$no_agenda}.xlsx");
     }
 
-    public function cetakPdfDetailPengembalianMaterial($pekerjaanId)
-    {
-        $pekerjaan = Pekerjaan::with('materialDikembalikans.gambarMaterials')->findOrFail($pekerjaanId)->first();
-
-        $pdf = Pdf::loadView('detail_pengembalian_material', ['pekerjaan' => $pekerjaan])->setPaper('A4', 'landscape');
-
-        return response()->streamDownload(function () use ($pdf) {
-            echo $pdf->stream();
-        }, 'detail-pengembalian-material.pdf');
-    }
-
     public function profileEdit(Request $request)
     {
         return view('profile.edit', [

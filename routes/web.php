@@ -28,9 +28,6 @@ Route::controller(AdminController::class)->middleware(AdminMiddleware::class)->p
     Route::get('/rekap-data/pengembalian-material', 'rekapPengembalianMaterial')->name('admin.laporan.pengembalian-material');
     Route::get('/rekap-data/pengembalian-material/{pekerjaanId}/detail', 'rekapDetailPengembalianMaterial')->name('admin.laporan.detail.pengembalian-material');
 
-    Route::get('/pengembalian-material/{pekerjaanId}/export', 'exportDetailPengembalianMaterial')->name('export.detail-pengembalian-material');
-    Route::get('/pengembalian-material/{pekerjaanId}/exportPdf', 'cetakPdfDetailPengembalianMaterial')->name('exportPdf.detail-pengembalian-material');
-
     Route::get('/profile', 'profileEdit')->name('admin.profile-edit');
     Route::patch('/profile', 'profileUpdate')->name('admin.profile-update');
     Route::delete('/profile', 'profileDestroy')->name('admin.profile-destroy');
