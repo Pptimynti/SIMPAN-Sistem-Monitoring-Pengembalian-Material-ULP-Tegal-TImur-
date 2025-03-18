@@ -46,58 +46,60 @@
    <!-- Daftar Pengembalian Terbaru -->
    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
       <h2 class="text-xl font-semibold text-gray-800 mb-4">Daftar Pengembalian Terbaru</h2>
-      <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-         <thead class="text-xs text-white uppercase bg-[#136782] dark:bg-gray-700">
-            <tr>
-               <th scope="col" class="px-6 py-3 border">No</th>
-               <th scope="col" class="px-6 py-3 min-w-32 border">Tanggal</th>
-               <th scope="col" class="px-6 py-3 min-w-72 border text-left" colspan="3">Material Dikembalikan
-               </th>
-            </tr>
-            <tr>
-               <th scope="col" class="px-6 py-3 border" colspan="2"></th>
-               <th scope="col" class="px-6 py-3 min-w-32 border">Nama</th>
-               <th scope="col" class="px-6 py-3 min-w-32 border">Jumlah</th>
-               <th scope="col" class="px-6 py-3 min-w-32 border">Gambar</th>
-               @if (Auth::user()->role === 'admin')
-                  <th scope="col" class="px-6 py-3 border"></th>
-               @endif
-            </tr>
-         </thead>
-         <tbody>
-            @foreach ($pengembalianMaterial as $pengembalian)
-               @php $firstRow = true; @endphp
-               @foreach ($pengembalian->materialDikembalikans as $materialD)
-                  <tr class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600">
-                     @if ($firstRow)
-                        <th scope="row" class="px-6 py-5 font-medium text-gray-900 dark:text-white border"
-                           rowspan="{{ count($pengembalian->materialDikembalikans) }}">
-                           {{ $loop->parent->iteration }}
-                        </th>
-                        <td class="px-6 py-5 border" rowspan="{{ count($pengembalian->materialDikembalikans) }}">
-                           {{ \Illuminate\Support\Carbon::parse($pengembalian->created_at)->isoFormat('D MMM Y') }}
+      <div class="overflow-x-auto">
+         <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+            <thead class="text-xs text-white uppercase bg-[#136782] dark:bg-gray-700">
+               <tr>
+                  <th scope="col" class="px-6 py-3 border">No</th>
+                  <th scope="col" class="px-6 py-3 min-w-32 border">Tanggal</th>
+                  <th scope="col" class="px-6 py-3 min-w-72 border text-left" colspan="3">Material Dikembalikan
+                  </th>
+               </tr>
+               <tr>
+                  <th scope="col" class="px-6 py-3 border" colspan="2"></th>
+                  <th scope="col" class="px-6 py-3 min-w-32 border">Nama</th>
+                  <th scope="col" class="px-6 py-3 min-w-32 border">Jumlah</th>
+                  <th scope="col" class="px-6 py-3 min-w-32 border">Gambar</th>
+                  @if (Auth::user()->role === 'admin')
+                     <th scope="col" class="px-6 py-3 border"></th>
+                  @endif
+               </tr>
+            </thead>
+            <tbody>
+               @foreach ($pengembalianMaterial as $pengembalian)
+                  @php $firstRow = true; @endphp
+                  @foreach ($pengembalian->materialDikembalikans as $materialD)
+                     <tr class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600">
+                        @if ($firstRow)
+                           <th scope="row" class="px-6 py-5 font-medium text-gray-900 dark:text-white border"
+                              rowspan="{{ count($pengembalian->materialDikembalikans) }}">
+                              {{ $loop->parent->iteration }}
+                           </th>
+                           <td class="px-6 py-5 border" rowspan="{{ count($pengembalian->materialDikembalikans) }}">
+                              {{ \Illuminate\Support\Carbon::parse($pengembalian->created_at)->isoFormat('D MMM Y') }}
+                           </td>
+                        @endif
+                        <td class="px-6 py-5 border">{{ $materialD->material->nama }}</td>
+                        <td class="px-6 py-5 font-bold text-gray-800 dark:text-white border">
+                           {{ $materialD->jumlah . ' ' . $materialD->material->satuan }}
                         </td>
-                     @endif
-                     <td class="px-6 py-5 border">{{ $materialD->material->nama }}</td>
-                     <td class="px-6 py-5 font-bold text-gray-800 dark:text-white border">
-                        {{ $materialD->jumlah . ' ' . $materialD->material->satuan }}
-                     </td>
-                     <td class="px-6 py-5 border">
-                        <div class="flex flex-wrap gap-2">
-                           @foreach ($materialD->gambarMaterials as $gambar)
-                              <img role="button" data-src="{{ asset('storage/' . $gambar->gambar) }}"
-                                 src="{{ asset('storage/' . $gambar->gambar) }}" alt="{{ $materialD->nama }}"
-                                 class="materialImages w-20 h-20 object-cover rounded border">
-                           @endforeach
-                        </div>
-                     </td>
-                     @if ($firstRow)
-                        @php $firstRow = false; @endphp
-                     @endif
-                  </tr>
+                        <td class="px-6 py-5 border">
+                           <div class="flex flex-wrap gap-2">
+                              @foreach ($materialD->gambarMaterials as $gambar)
+                                 <img role="button" data-src="{{ asset('storage/' . $gambar->gambar) }}"
+                                    src="{{ asset('storage/' . $gambar->gambar) }}" alt="{{ $materialD->nama }}"
+                                    class="materialImages w-20 h-20 object-cover rounded border">
+                              @endforeach
+                           </div>
+                        </td>
+                        @if ($firstRow)
+                           @php $firstRow = false; @endphp
+                        @endif
+                     </tr>
+                  @endforeach
                @endforeach
-            @endforeach
-         </tbody>
-      </table>
+            </tbody>
+         </table>
+      </div>
    </div>
 </x-app-layout>

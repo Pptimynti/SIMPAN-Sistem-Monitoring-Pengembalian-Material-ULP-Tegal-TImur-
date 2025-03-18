@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Exports\RekapPengembalianMaterialExport;
 use App\Models\Pekerjaan;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Maatwebsite\Excel\Facades\Excel;
@@ -43,36 +44,25 @@ class TabelRekapPengembalianMaterial extends Component
 
     public function render()
     {
-        $query = Pekerjaan::query()
-            ->where(function ($q) {
-                $q->where('no_agenda', 'like', "%{$this->search}%")
-                    ->orWhere('petugas', 'like', "%{$this->search}%");
-            });
+        $query = Pekerjaan::query();
 
         if ($this->filterBy && $this->startDate && $this->endDate) {
-            $query->whereBetween($this->filterBy, [$this->startDate, $this->endDate]);
+            if ($this->filterBy === 'created_at') {
+                $query->whereBetween(DB::raw('DATE(created_at)'), [$this->startDate, $this->endDate]);
+            } else {
+                $query->whereBetween($this->filterBy, [$this->startDate, $this->endDate]);
+            }
         }
+
+        $query->where(function ($q) {
+            $q->where('no_agenda', 'like', "%{$this->search}%")
+                ->orWhere('petugas', 'like', "%{$this->search}%")
+                ->orWhere('mutasi', 'like', "%{$this->search}%");
+        });
 
         $pekerjaans = $query->latest()->paginate($this->perPage);
 
         return view('livewire.tabel-rekap-pengembalian-material', compact('pekerjaans'));
-    }
-
-    public function cetak_pdf()
-    {
-        $pekerjaans = Pekerjaan::with('materialDikembalikans.gambarMaterials')
-            ->where(function ($q) {
-                $q->where('no_agenda', 'like', "%{$this->search}%")
-                    ->orWhere('petugas', 'like', "%{$this->search}%");
-            })
-            ->get();
-
-        $pdf = Pdf::loadView('rekap_pengembalian_material', ['pekerjaans' => $pekerjaans])
-            ->setPaper('A4', 'landscape');
-
-        return response()->streamDownload(function () use ($pdf) {
-            echo $pdf->stream();
-        }, 'rekap-pengembalian.pdf');
     }
 
     public function export()

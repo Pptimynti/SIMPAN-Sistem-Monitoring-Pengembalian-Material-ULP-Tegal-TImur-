@@ -347,7 +347,7 @@
       </main>
 
       <!-- Footer -->
-      <div class="mt-8 text-center text-sm text-gray-600 ml-72 py-4">
+      <div class="mt-8 text-center text-sm text-gray-600 ml-0 lg:ml-72 py-4">
          <p>© 2025 SIMPAN | PLN ULP Tegal Timur. All rights reserved.</p>
       </div>
 
@@ -372,14 +372,12 @@
       document.addEventListener("DOMContentLoaded", function() {
          @if (session('success'))
             Swal.fire({
-               title: "Berhasil!",
                icon: "success",
                text: "{{ session('success') }}",
                draggable: true
             });
          @elseif (session('error'))
             Swal.fire({
-               title: "Gagal!",
                icon: "error",
                text: "{{ session('error') }}",
                draggable: true
