@@ -114,7 +114,7 @@
                      <tr class="bg-white dark:bg-gray-800 border-b dark:border-gray-700">
                         <td class="px-4 py-2 sm:px-6 sm:py-4">{{ $ms->material->nama }}</td>
                         <td class="px-4 py-2 sm:px-6 sm:py-4 font-bold text-[#136782] dark:text-[#5ab4d4]">
-                           {{ $ms->telah_digunakan }}</td>
+                           {{ $ms->telah_digunaka . ' ' . $ms->material->satuan }}</td>
                      </tr>
                   @endforeach
                </tbody>

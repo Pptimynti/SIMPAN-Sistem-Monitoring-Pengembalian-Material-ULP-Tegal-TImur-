@@ -128,7 +128,7 @@
                         <td class="px-4 py-2 sm:px-6 sm:py-4">{{ $loop->iteration }}</td>
                         <td class="px-4 py-2 sm:px-6 sm:py-4">{{ $return->material->nama }}</td>
                         <td class="px-4 py-2 sm:px-6 sm:py-4 font-bold text-[#136782] dark:text-[#5ab4d4]">
-                           {{ $return->stok_tersedia }}</td>
+                           {{ $return->stok_tersedia . ' ' . $return->material->satuan }}</td>
                      </tr>
                   @endforeach
                </tbody>

@@ -47,9 +47,9 @@
                         <tr>
                            <th scope="col" class="px-6 py-3">No</th>
                            <th scope="col" class="px-6 py-3">Nama Material</th>
-                           <th scope="col" class="px-6 py-3">Stok Awal</th>
+                           <th scope="col" class="px-6 py-3 min-w-44">Stok Awal</th>
                            <th scope="col" class="px-6 py-3">Stok Digunakan</th>
-                           <th scope="col" class="px-6 py-3">Stok Tersedia</th>
+                           <th scope="col" class="px-6 py-3 min-w-44">Stok Tersedia</th>
                         </tr>
                      </thead>
                      <tbody>
@@ -60,11 +60,12 @@
                               </td>
                               <td class="px-6 py-4">{{ $return->material->nama }}</td>
                               <td class="px-6 py-4">
-                                 {{ $return->material->materialDikembalikans->sum('jumlah') == 0 ? $return->stok_manual : $return->material->materialDikembalikans->sum('jumlah') + $return->stok_manual }}
+                                 {{ $return->material->materialDikembalikans->sum('jumlah') == 0 ? $return->stok_manual : $return->material->materialDikembalikans->sum('jumlah') + $return->stok_manual . ' ' . $return->material->satuan }}
                               </td>
-                              <td class="px-6 py-4">{{ $return->telah_digunakan }}</td>
+                              <td class="px-6 py-4">{{ $return->telah_digunakan . ' ' . $return->material->satuan }}
+                              </td>
                               <td class="px-6 py-4 font-bold text-[#136782] dark:text-[#5ab4d4]">
-                                 {{ $return->stok_tersedia }}</td>
+                                 {{ $return->stok_tersedia . ' ' . $return->material->satuan }}</td>
                            </tr>
                         @endforeach
                      </tbody>
@@ -114,7 +115,8 @@
                                  {{ \Illuminate\Support\Carbon::parse($activity->created_at)->isoFormat('D MMM Y') }}
                               </td>
                               <td class="px-6 py-4">{{ $activity->materialBekas->material->nama }}</td>
-                              <td class="px-6 py-4">{{ $activity->jumlah }}</td>
+                              <td class="px-6 py-4">
+                                 {{ $activity->jumlah . ' ' . $activity->materialBekas->material->satuan }}</td>
                            </tr>
                         @endforeach
                      </tbody>
