@@ -2,6 +2,8 @@
 namespace App\Exports;
 
 use App\Models\Pekerjaan;
+use App\Models\User;
+use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
@@ -49,15 +51,24 @@ class RekapPengembalianMaterialExport implements FromCollection, WithHeadings, W
     {
         if ($this->filterBy && $this->startDate && $this->endDate) {
             $header = [
-                ['Rekap Pengembalian Material Berdasarkan ' . $this->getFilterText() . ' Periode ' . $this->startDate . ' hingga ' . $this->endDate],
                 ['PT PLN (PERSERO) ULP TEGAL TIMUR'],
-                ['Catatan: Data ini adalah rekap pengembalian material berdasarkan ' . $this->getFilterText() . ' periode ' . $this->startDate . ' hingga ' . $this->endDate . '.'],
+                ['Rekap Pengembalian Material Berdasarkan ' . $this->getFilterText() . ' Periode ' . $this->startDate . ' hingga ' . $this->endDate],
+                [],
+                []
+            ];
+        } else if ($this->search) {
+            $header = [
+                ['PT PLN (PERSERO) ULP TEGAL TIMUR'],
+                ['Rekap Pengembalian Material Berdasarkan Hasil Pencarian: ' . $this->search],
+                [],
+                []
             ];
         } else {
             $header = [
-                ['Rekap Semua Pengembalian Material'],
                 ['PT PLN (PERSERO) ULP TEGAL TIMUR'],
-                ['Catatan: Data ini adalah rekap pengembalian material secara keseluruhan.'],
+                ['Rekap Semua Pengembalian Material'],
+                [],
+                []
             ];
         }
 
@@ -129,7 +140,7 @@ class RekapPengembalianMaterialExport implements FromCollection, WithHeadings, W
         $logo->setOffsetY(10);
         $drawings[] = $logo;
 
-        $row = 5;
+        $row = 6;
         $materials = $this->collection();
 
         foreach ($materials as $pekerjaan) {
@@ -140,10 +151,11 @@ class RekapPengembalianMaterialExport implements FromCollection, WithHeadings, W
                         $drawing->setName($material->material->nama);
                         $drawing->setDescription($material->material->nama);
                         $drawing->setPath(public_path('storage/' . $gambar->gambar));
-                        $drawing->setHeight(150);
+                        $drawing->setHeight(150); // Tinggi gambar
+                        $drawing->setResizeProportional(true);
                         $drawing->setCoordinates('J' . $row);
-                        $drawing->setOffsetX(0);
-                        $drawing->setOffsetY(0);
+                        $drawing->setOffsetX(30);
+                        $drawing->setOffsetY(25);
                         $drawings[] = $drawing;
                     }
                 }
@@ -182,27 +194,14 @@ class RekapPengembalianMaterialExport implements FromCollection, WithHeadings, W
             ],
         ]);
 
-        $sheet->mergeCells('A3:J3');
-        $sheet->getStyle('A3')->applyFromArray([
-            'font' => [
-                'italic' => true,
-                'size' => 12,
-                'color' => ['rgb' => '000000'],
-            ],
-            'alignment' => [
-                'horizontal' => Alignment::HORIZONTAL_LEFT,
-                'vertical' => Alignment::VERTICAL_CENTER,
-            ],
-        ]);
-
-        $sheet->getStyle('A4:J4')->applyFromArray([
+        $sheet->getStyle('A5:J5')->applyFromArray([
             'font' => [
                 'bold' => true,
-                'color' => ['rgb' => 'FFFFFF'],
+                'color' => ['rgb' => '000000'],
             ],
             'fill' => [
                 'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-                'startColor' => ['rgb' => '4F81BD'],
+                'startColor' => ['rgb' => 'FFFF00'], // Warna kuning khas PLN
             ],
             'borders' => [
                 'allBorders' => [
@@ -212,7 +211,7 @@ class RekapPengembalianMaterialExport implements FromCollection, WithHeadings, W
             ],
         ]);
 
-        $sheet->getStyle('A5:J' . ($sheet->getHighestRow()))->applyFromArray([
+        $sheet->getStyle('A6:J' . ($sheet->getHighestRow()))->applyFromArray([
             'borders' => [
                 'allBorders' => [
                     'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
@@ -225,10 +224,12 @@ class RekapPengembalianMaterialExport implements FromCollection, WithHeadings, W
             ],
         ]);
 
-        for ($row = 5; $row <= $sheet->getHighestRow(); $row++) {
+        // Atur tinggi baris untuk menampung gambar
+        for ($row = 6; $row <= $sheet->getHighestRow(); $row++) {
             $sheet->getRowDimension($row)->setRowHeight(150);
         }
 
+        // Atur lebar kolom
         $sheet->getColumnDimension('A')->setWidth(10);
         $sheet->getColumnDimension('B')->setWidth(20);
         $sheet->getColumnDimension('C')->setWidth(20);
@@ -236,14 +237,16 @@ class RekapPengembalianMaterialExport implements FromCollection, WithHeadings, W
         $sheet->getColumnDimension('E')->setWidth(20);
         $sheet->getColumnDimension('F')->setWidth(25);
         $sheet->getColumnDimension('G')->setWidth(20);
-        $sheet->getColumnDimension('H')->setWidth(40);
+        $sheet->getColumnDimension('H')->setWidth(30);
+        $sheet->getStyle('H1:H' . $sheet->getHighestRow())->getAlignment()->setWrapText(true);
         $sheet->getColumnDimension('I')->setWidth(15);
         $sheet->getColumnDimension('J')->setWidth(40);
 
-        $sheet->getStyle('A1:J' . ($sheet->getHighestRow()))->getAlignment()->setHorizontal('center');
-        $sheet->getStyle('A1:J' . ($sheet->getHighestRow()))->getAlignment()->setVertical('center');
+        // Atur alignment kolom J
+        $sheet->getStyle('J1:J' . $sheet->getHighestRow())->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+        $sheet->getStyle('J1:J' . $sheet->getHighestRow())->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-        $row = 5;
+        $row = 6;
         $materials = Pekerjaan::with('materialDikembalikans')->get();
 
         foreach ($materials as $pekerjaan) {
@@ -259,6 +262,111 @@ class RekapPengembalianMaterialExport implements FromCollection, WithHeadings, W
             }
             $row += $materialCount;
         }
+
+        if ($this->filterBy && $this->startDate && $this->endDate) {
+            $lastRow = $sheet->getHighestRow() + 1;
+            $sheet->setCellValue('A' . $lastRow, 'Catatan: Data ini adalah rekap pengembalian material berdasarkan ' . $this->getFilterText() . ' periode ' . $this->startDate . ' hingga ' . $this->endDate . '.');
+            $sheet->mergeCells('A' . $lastRow . ':J' . $lastRow);
+            $sheet->getStyle('A' . $lastRow)->applyFromArray([
+                'font' => [
+                    'size' => 12,
+                ],
+                'alignment' => [
+                    'horizontal' => Alignment::HORIZONTAL_LEFT,
+                ],
+            ]);
+        } else if ($this->search) {
+            $lastRow = $sheet->getHighestRow() + 1;
+            $sheet->setCellValue('A' . $lastRow, 'Catatan: Data ini adalah rekap pengembalian material berdasarkan hasil pencarian: ' . $this->search);
+            $sheet->mergeCells('A' . $lastRow . ':J' . $lastRow);
+            $sheet->getStyle('A' . $lastRow)->applyFromArray([
+                'font' => [
+                    'size' => 12,
+                ],
+                'alignment' => [
+                    'horizontal' => Alignment::HORIZONTAL_LEFT,
+                ],
+            ]);
+        } else {
+            $lastRow = $sheet->getHighestRow() + 1;
+            $sheet->setCellValue('A' . $lastRow, 'Catatan: Data ini adalah rekap pengembalian material secara keseluruhan.');
+            $sheet->mergeCells('A' . $lastRow . ':J' . $lastRow);
+            $sheet->getStyle('A' . $lastRow)->applyFromArray([
+                'font' => [
+                    'size' => 12,
+                ],
+                'alignment' => [
+                    'horizontal' => Alignment::HORIZONTAL_LEFT,
+                ],
+            ]);
+        }
+
+        $lastRow = $sheet->getHighestRow() + 3;
+        $sheet->setCellValue('J' . $lastRow, 'Tegal, ...... Tahun ' . Carbon::now()->year);
+        $sheet->getStyle('J' . $lastRow)->applyFromArray([
+            'font' => [
+                'size' => 12,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+            ],
+        ]);
+
+        $lastRow += 3;
+        $sheet->setCellValue('A' . $lastRow, 'Mengetahui,');
+        $sheet->mergeCells('A' . $lastRow . ':J' . $lastRow);
+        $sheet->getStyle('A' . $lastRow)->applyFromArray([
+            'font' => [
+                'size' => 12,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+            ],
+        ]);
+
+        $lastRow += 3;
+        $sheet->setCellValue('A' . $lastRow, 'Manager PLN ULP Tegal Timur');
+        $sheet->mergeCells('A' . $lastRow . ':B' . $lastRow);
+        $sheet->getStyle('A' . $lastRow)->applyFromArray([
+            'font' => [
+                'size' => 12,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+            ],
+        ]);
+
+        $sheet->setCellValue('J' . $lastRow, 'Penanggung Jawab');
+        $sheet->getStyle('J' . $lastRow)->applyFromArray([
+            'font' => [
+                'size' => 12,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+            ],
+        ]);
+
+        $lastRow += 5;
+        $sheet->setCellValue('A' . $lastRow, '(' . User::where('role', 'manager')->first()->name . ')');
+        $sheet->mergeCells('A' . $lastRow . ':B' . $lastRow);
+        $sheet->getStyle('A' . $lastRow)->applyFromArray([
+            'font' => [
+                'size' => 12,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+            ],
+        ]);
+
+        $sheet->setCellValue('J' . $lastRow, '(Nama Penanggung Jawab)');
+        $sheet->getStyle('J' . $lastRow)->applyFromArray([
+            'font' => [
+                'size' => 12,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+            ],
+        ]);
 
         return [];
     }

@@ -373,12 +373,14 @@
             Swal.fire({
                title: "Berhasil!",
                icon: "success",
+               text: "{{ session('success') }}",
                draggable: true
             });
          @elseif (session('error'))
             Swal.fire({
                title: "Gagal!",
                icon: "error",
+               text: "{{ session('error') }}",
                draggable: true
             });
          @endif
