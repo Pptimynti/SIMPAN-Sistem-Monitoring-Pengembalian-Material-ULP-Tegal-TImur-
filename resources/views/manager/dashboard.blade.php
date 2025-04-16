@@ -164,7 +164,6 @@
                   @elseif ($activity->material_bekas_id !== null)
                      <p class="text-sm sm:text-base text-gray-700 dark:text-gray-200 capitalize">
                         {{ $activity->deskripsi }}
-                        Material: <span class="font-semibold">{{ $dataList }}</span>
                      </p>
                   @endif
 
